@@ -26,7 +26,7 @@ public class Main {
 		bucket4.fill();
 		bucket4.pourInto(bucket7);
 		int amount = bucket7.getQuantity();
-		System.out.println("Bucket7 has: " + amount + " liters of water.");
+		System.out.println("Bucket7 has: " + amount + " liters of water now.");
 	}
 
 }
