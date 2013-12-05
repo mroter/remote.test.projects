@@ -2,8 +2,8 @@
 
     <!-- Search, should appear as action button -->
     <item android:id="@+id/action_search"
-          android:icon="@drawable/ic_action_search"
-          android:title="@string/action_search"
+          android:icon="@drawable/ic_action_save"
+          android:title="@string/action_save"
           android:showAsAction="ifRoom|withText" android:visible="true" android:enabled="true"/>
     
     <!-- Settings, should always be in the overflow -->
