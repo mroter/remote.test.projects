@@ -1,5 +1,6 @@
 package sdgm.com.myfirstapp;
 
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	public final static String EXTRA_MESSAGE = "sdgm.com.myfirstapp.MESSAGE";
@@ -58,6 +60,9 @@ public class MainActivity extends Activity {
 		SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putString(EXTRA_MESSAGE, message);
 		editor.commit();
+		
+		// Display an information message
+		Toast.makeText(this, R.string.data_was_saved, Toast.LENGTH_LONG).show();
 	}
 
 	/** Called when the user clicks the Send button */
