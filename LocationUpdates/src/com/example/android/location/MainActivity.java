@@ -17,37 +17,40 @@
 package com.example.android.location;
 
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 
 /**
  * This the app's main Activity. It provides buttons for requesting the various features of the
@@ -141,6 +144,39 @@ public class MainActivity extends FragmentActivity implements
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.app_menu, menu);
+        //return true;
+        return super.onCreateOptionsMenu(menu);
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.get_location:
+                getLocation(this.getCurrentFocus());
+                return true;
+                
+            case R.id.get_address:
+            	getAddress(this.getCurrentFocus());
+                return true;
+                
+            case R.id.start_updates:
+            	startUpdates(this.getCurrentFocus());
+                return true;
+                
+            case R.id.stop_updates:
+            	stopUpdates(this.getCurrentFocus());
+                return true;    
+                
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+    
     /*
      * Called when the Activity is no longer visible at all.
      * Stop updates and disconnect.

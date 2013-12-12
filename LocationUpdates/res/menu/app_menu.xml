@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item android:id="@+id/get_location"
+          android:icon="@drawable/ic_action_location_found"
+          android:title="@string/get_location"
+          android:showAsAction="ifRoom"/>
+    
+    <item android:id="@+id/get_address"
+          android:icon="@drawable/ic_action_map"
+          android:title="@string/get_address"
+          android:showAsAction="ifRoom"/>
+    
+    <item android:id="@+id/start_updates"
+          android:icon="@drawable/ic_action_place"
+          android:title="@string/start_updates"
+          android:showAsAction="ifRoom"/>
+        
+     <item android:id="@+id/stop_updates"
+          android:icon="@drawable/ic_action_location_off"
+          android:title="@string/stop_updates"
+          android:showAsAction="ifRoom"/>
+</menu>
