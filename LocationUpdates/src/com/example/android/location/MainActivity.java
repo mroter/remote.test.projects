@@ -172,6 +172,11 @@ public class MainActivity extends FragmentActivity implements
             	stopUpdates(this.getCurrentFocus());
                 return true;    
                 
+            case R.id.exit:
+                stopUpdates(this.getCurrentFocus());
+            	this.finish();
+                return true; 
+                
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -191,8 +196,11 @@ public class MainActivity extends FragmentActivity implements
 
         // After disconnect() is called, the client is considered "dead".
         mLocationClient.disconnect();
-
+        
         super.onStop();
+        
+     // close the application
+        super.onDestroy();
     }
     /*
      * Called when the Activity is going into the background.
@@ -240,6 +248,12 @@ public class MainActivity extends FragmentActivity implements
             mEditor.commit();
         }
 
+    }
+    
+    @Override
+    protected void onDestroy() {
+    	android.os.Process.killProcess(android.os.Process.myPid());
+        super.onDestroy();
     }
 
     /*

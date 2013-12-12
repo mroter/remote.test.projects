@@ -20,4 +20,9 @@
           android:icon="@drawable/ic_action_location_off"
           android:title="@string/stop_updates"
           android:showAsAction="collapseActionView"/>
+     
+     <item android:id="@+id/exit"
+          android:title="@string/exit"
+          android:showAsAction="collapseActionView"/>
+    
 </menu>

@@ -64,6 +64,7 @@ int drawable ic_plusone_tall_off_client 0x7f020020
 int id Speed 0x7f05000b
 int id address 0x7f050009
 int id address_progress 0x7f05000e
+int id exit 0x7f050013
 int id get_address 0x7f050010
 int id get_location 0x7f05000f
 int id hybrid 0x7f050004
@@ -135,6 +136,7 @@ int string connection_error_sign_in_required 0x7f060026
 int string connection_error_unknown 0x7f060027
 int string connection_failed 0x7f060034
 int string disconnected 0x7f060035
+int string exit 0x7f060050
 int string get_address 0x7f060036
 int string get_location 0x7f060037
 int string illegal_argument_exception 0x7f060038
