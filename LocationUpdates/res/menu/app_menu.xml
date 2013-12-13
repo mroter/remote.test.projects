@@ -11,17 +11,22 @@
           android:title="@string/get_address"
           android:showAsAction="ifRoom|withText"/>
     
-    <item android:id="@+id/start_updates"
-          android:icon="@drawable/ic_action_place"
-          android:title="@string/start_updates"
-          android:showAsAction="collapseActionView"/>
-        
-     <item android:id="@+id/stop_updates"
-          android:icon="@drawable/ic_action_location_off"
-          android:title="@string/stop_updates"
-          android:showAsAction="collapseActionView"/>
-     
-     <item android:id="@+id/exit"
+    <item android:id="@+id/updates_submenu"
+          android:icon="@drawable/ic_action_refresh"
+          android:title="@string/updates" 
+          android:showAsAction="ifRoom|withText">
+        <!-- "Updates" submenu -->
+        <menu>
+		    <group android:checkableBehavior="single">
+		        <item android:id="@+id/start_updates"
+			          android:title="@string/start_updates"/>
+		        <item android:id="@+id/stop_updates"
+			          android:title="@string/stop_updates"/>
+		    </group>
+        </menu>
+    </item>
+       
+    <item android:id="@+id/exit"
           android:title="@string/exit"
           android:showAsAction="collapseActionView"/>
     
