@@ -15,12 +15,14 @@
           android:icon="@drawable/ic_action_refresh"
           android:title="@string/updates" 
           android:showAsAction="ifRoom|withText">
+          
         <!-- "Updates" submenu -->
         <menu>
 		    <group android:checkableBehavior="single">
 		        <item android:id="@+id/start_updates"
 			          android:title="@string/start_updates"/>
 		        <item android:id="@+id/stop_updates"
+		              android:checked="true"
 			          android:title="@string/stop_updates"/>
 		    </group>
         </menu>

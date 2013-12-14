@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Locale;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -81,7 +82,6 @@ public class MainActivity extends FragmentActivity implements
     private TextView mAddress;
     private TextView mSpeed;
     private ProgressBar mActivityIndicator;
-    private TextView mConnectionState;
     private TextView mConnectionStatus;
 
     // Handle to SharedPreferences for this app
@@ -110,7 +110,6 @@ public class MainActivity extends FragmentActivity implements
         mAddress = (TextView) findViewById(R.id.address);
         mSpeed = (TextView) findViewById(R.id.Speed);
         mActivityIndicator = (ProgressBar) findViewById(R.id.address_progress);
-        mConnectionState = (TextView) findViewById(R.id.text_connection_state);
         mConnectionStatus = (TextView) findViewById(R.id.text_connection_status);
 
         // Create a new global location parameters object
@@ -141,6 +140,14 @@ public class MainActivity extends FragmentActivity implements
          * handle callbacks.
          */
         mLocationClient = new LocationClient(this, this, this);
+        
+        // Make sure we're running on Honeycomb or higher to use ActionBar APIs
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            // For the main activity, make sure the app icon in the action bar
+            // does not behave as a button
+            ActionBar actionBar = getActionBar();
+            actionBar.setHomeButtonEnabled(false);
+        }
 
     }
 
@@ -157,24 +164,30 @@ public class MainActivity extends FragmentActivity implements
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.get_location:
-                getLocation(this.getCurrentFocus());
+                getLocation();
                 return true;
                 
             case R.id.get_address:
-            	getAddress(this.getCurrentFocus());
+            	getAddress();
                 return true;
                 
             case R.id.start_updates:
-            	startUpdates(this.getCurrentFocus());
+            	if (item.isChecked()) item.setChecked(false);
+                else item.setChecked(true);
+            	startUpdates();
                 return true;
                 
             case R.id.stop_updates:
-            	stopUpdates(this.getCurrentFocus());
+            	if (item.isChecked()) item.setChecked(false);
+                else item.setChecked(true);
+            	stopUpdates();
                 return true;    
                 
             case R.id.exit:
-                stopUpdates(this.getCurrentFocus());
-            	this.finish();
+            	if (mUpdatesRequested) {
+            		stopUpdates();
+                }
+                this.finish();
                 return true; 
                 
             default:
@@ -198,9 +211,7 @@ public class MainActivity extends FragmentActivity implements
         mLocationClient.disconnect();
         
         super.onStop();
-        
-     // close the application
-        super.onDestroy();
+
     }
     /*
      * Called when the Activity is going into the background.
@@ -252,7 +263,8 @@ public class MainActivity extends FragmentActivity implements
     
     @Override
     protected void onDestroy() {
-    	android.os.Process.killProcess(android.os.Process.myPid());
+    	// This caused the application to die when orientation changed 
+    	//android.os.Process.killProcess(android.os.Process.myPid());
         super.onDestroy();
     }
 
@@ -280,7 +292,8 @@ public class MainActivity extends FragmentActivity implements
                         Log.d(LocationUtils.APPTAG, getString(R.string.resolved));
 
                         // Display the result
-                        mConnectionState.setText(R.string.connected);
+                        //mConnectionState.setText(R.string.connected);
+                        Toast.makeText(this, R.string.connected, Toast.LENGTH_SHORT).show();
                         mConnectionStatus.setText(R.string.resolved);
                     break;
 
@@ -290,7 +303,8 @@ public class MainActivity extends FragmentActivity implements
                         Log.d(LocationUtils.APPTAG, getString(R.string.no_resolution));
 
                         // Display the result
-                        mConnectionState.setText(R.string.disconnected);
+                        //mConnectionState.setText(R.string.disconnected);
+                        Toast.makeText(this, R.string.disconnected, Toast.LENGTH_SHORT).show();
                         mConnectionStatus.setText(R.string.no_resolution);
 
                     break;
@@ -344,7 +358,7 @@ public class MainActivity extends FragmentActivity implements
      *
      * @param v The view object associated with this method, in this case a Button.
      */
-    public void getLocation(View v) {
+    public void getLocation() {
 
         // If Google Play Services is available
         if (servicesConnected()) {
@@ -366,7 +380,7 @@ public class MainActivity extends FragmentActivity implements
      */
     // For Eclipse with ADT, suppress warnings about Geocoder.isPresent()
     @SuppressLint("NewApi")
-    public void getAddress(View v) {
+    public void getAddress() {
 
         // In Gingerbread and later, use Geocoder.isPresent() to see if a geocoder is available.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && !Geocoder.isPresent()) {
@@ -394,7 +408,7 @@ public class MainActivity extends FragmentActivity implements
      *
      * @param v The view object associated with this method, in this case a Button.
      */
-    public void startUpdates(View v) {
+    public void startUpdates() {
         mUpdatesRequested = true;
 
         if (servicesConnected()) {
@@ -409,9 +423,9 @@ public class MainActivity extends FragmentActivity implements
      *
      * @param v The view object associated with this method, in this case a Button.
      */
-    public void stopUpdates(View v) {
+    public void stopUpdates() {
         mUpdatesRequested = false;
-
+        
         if (servicesConnected()) {
             stopPeriodicUpdates();
         }
@@ -488,7 +502,7 @@ public class MainActivity extends FragmentActivity implements
 
         // Report to the UI that the location was updated
         mConnectionStatus.setText(R.string.location_updated);
-
+        
         // In the UI, set the latitude and longitude to the value received
         mLatLng.setText(LocationUtils.getLatLng(this, location));
         
@@ -504,7 +518,7 @@ public class MainActivity extends FragmentActivity implements
     private void startPeriodicUpdates() {
 
         mLocationClient.requestLocationUpdates(mLocationRequest, this);
-        mConnectionState.setText(R.string.location_requested);
+        Toast.makeText(this, R.string.location_requested, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -513,7 +527,10 @@ public class MainActivity extends FragmentActivity implements
      */
     private void stopPeriodicUpdates() {
         mLocationClient.removeLocationUpdates(this);
-        mConnectionState.setText(R.string.location_updates_stopped);
+        //mConnectionState.setText(R.string.location_updates_stopped);
+        Toast.makeText(this, R.string.location_updates_stopped, Toast.LENGTH_SHORT).show();
+        mConnectionStatus.setText("");
+        mSpeed.setText("");
     }
 
     /**

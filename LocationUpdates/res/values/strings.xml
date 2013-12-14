@@ -16,7 +16,7 @@
 -->
 <resources>
     <!-- Application identifiers -->
-    <string name="app_name">Location Updates</string>
+    <string name="app_name">Locator</string>
     <string name="app_tag">LocationUpdates</string>
     <string name="app_description">
         Displays current address and current or updated location using Location Services
@@ -76,8 +76,6 @@
     <string name="request_location_updates_in_progress">
         Can\'t request location updates, previous request hasn\'t finished
     </string>
-    <string name="start_updates">Start Updates</string>
-    <string name="stop_updates">Stop Updates</string>
     <string name="unknown">--Unknown--</string>
     <string name="unknown_activity_request_code">
         Received an unknown activity request code %1$d in onActivityResult.
@@ -86,9 +84,9 @@
     <!-- Menu strings -->
     <string name="get_location">Get Location</string>
     <string name="get_address">Get Address</string>
-    <string name="start_updates">Start Updates</string>
-    <string name="stop_updates">Stop Updates</string>
+    <string name="start_updates">Periodic updates</string>
+    <string name="stop_updates">No updates</string>
     <string name="updates">Location Updates</string>
-    <string name="exit">Exit</string>
+    <string name="exit">Exit</string> 
         
 </resources>
