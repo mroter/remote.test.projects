@@ -157,6 +157,7 @@ public class MainActivity extends FragmentActivity implements
         inflater.inflate(R.menu.app_menu, menu);
         //return true;
         return super.onCreateOptionsMenu(menu);
+        
     }
     
     @Override
@@ -195,6 +196,7 @@ public class MainActivity extends FragmentActivity implements
         }
     }
     
+   
     /*
      * Called when the Activity is no longer visible at all.
      * Stop updates and disconnect.
@@ -248,7 +250,6 @@ public class MainActivity extends FragmentActivity implements
     @Override
     public void onResume() {
         super.onResume();
-
         // If the app already has a setting for getting location updates, get it
         if (mPrefs.contains(LocationUtils.KEY_UPDATES_REQUESTED)) {
             mUpdatesRequested = mPrefs.getBoolean(LocationUtils.KEY_UPDATES_REQUESTED, false);
