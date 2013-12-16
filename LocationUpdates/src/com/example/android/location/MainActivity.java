@@ -84,7 +84,6 @@ public class MainActivity extends FragmentActivity implements
     private TextView mLatLng;
     private TextView mAddress;
     private TextView mSpeed;
-    private TextView mUnit;
     private ProgressBar mActivityIndicator;
     private TextView mConnectionStatus;
 
@@ -113,7 +112,6 @@ public class MainActivity extends FragmentActivity implements
         mLatLng = (TextView) findViewById(R.id.lat_lng);
         mAddress = (TextView) findViewById(R.id.address);
         mSpeed = (TextView) findViewById(R.id.Speed);
-        mUnit = (TextView) findViewById(R.id.label_unit);
         mActivityIndicator = (ProgressBar) findViewById(R.id.address_progress);
         mConnectionStatus = (TextView) findViewById(R.id.text_connection_status);
 
@@ -534,7 +532,6 @@ public class MainActivity extends FragmentActivity implements
         
         // In the UI, set the speed
         mSpeed.setText(LocationUtils.getSpeed(this, location));
-        mUnit.setText(R.string.unit);
     }
 
     /**
@@ -557,7 +554,6 @@ public class MainActivity extends FragmentActivity implements
         Toast.makeText(this, R.string.location_updates_stopped, Toast.LENGTH_SHORT).show();
         mConnectionStatus.setText("");
         mSpeed.setText("");
-        mUnit.setText("");
     }
 
     /**

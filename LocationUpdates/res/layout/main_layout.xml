@@ -60,32 +60,24 @@
 	        android:visibility="gone" />
 	
 	</RelativeLayout>
-	
+
     <RelativeLayout
         android:id="@+id/speed_layout"
-        android:layout_width="match_parent"
-        android:layout_height="130dp"
-        android:paddingLeft="8dip"
-        android:paddingTop="15dip" >
-	    
-	   	<TextView
-	        android:id="@+id/Speed"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_centerInParent="true"       
-	        android:textIsSelectable="true"
-	        android:textSize="50sp" />
-        
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginLeft="70dip"
+        android:background="@drawable/speedometer" >
+
         <TextView
-	        android:id="@+id/label_unit"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignBaseline="@+id/Speed"
-	        android:layout_toRightOf="@+id/Speed"
-	        android:paddingLeft="4dip"
-	        android:paddingTop="20dip"
-	        android:textSize="12sp" />
-	    
+            android:id="@+id/Speed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textIsSelectable="true"
+            android:textSize="50sp" 
+            android:textColor="@color/white"
+            />
+
     </RelativeLayout>
     
     <RelativeLayout
