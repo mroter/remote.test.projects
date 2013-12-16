@@ -65,9 +65,6 @@ int drawable ic_plusone_tall_off_client 0x7f020021
 int id Speed 0x7f05000b
 int id address 0x7f050009
 int id address_progress 0x7f05000d
-int id exit 0x7f050013
-int id get_address 0x7f05000f
-int id get_location 0x7f05000e
 int id hybrid 0x7f050004
 int id label_address 0x7f050008
 int id label_lat_lng 0x7f050006
@@ -77,14 +74,10 @@ int id main_layout 0x7f050005
 int id none 0x7f050000
 int id normal 0x7f050001
 int id satellite 0x7f050002
-int id start_updates 0x7f050011
-int id stop_updates 0x7f050012
 int id terrain 0x7f050003
 int id text_connection_status 0x7f05000c
-int id updates_submenu 0x7f050010
 int integer google_play_services_version 0x7f070000
 int layout activity_main 0x7f030000
-int menu app_menu 0x7f0a0000
 int string IO_Exception_getFromLocation 0x7f06003b
 int string Speed_Format 0x7f06002d
 int string action_settings 0x7f06002e

@@ -39,7 +39,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -71,7 +70,13 @@ public class MainActivity extends FragmentActivity implements
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener {
 
-    // A request to connect to Location Services
+	private static final int MENU_GET_LOCATION = Menu.FIRST;
+	private static final int MENU_GET_ADDRESS = Menu.FIRST +1;
+	private static final int MENU_UPDATES = Menu.FIRST + 2;
+	private static final int MENU_EXIT = Menu.FIRST + 3;
+	
+	
+	// A request to connect to Location Services
     private LocationRequest mLocationRequest;
 
     // Stores the current instantiation of the location client in this object
@@ -153,38 +158,34 @@ public class MainActivity extends FragmentActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.app_menu, menu);
-        //return true;
-        return super.onCreateOptionsMenu(menu);
-        
+    	super.onCreateOptionsMenu(menu);
+    	buildMenu(menu);        
+        return true;
     }
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.get_location:
+        
+            case MENU_GET_LOCATION:
                 getLocation();
                 return true;
                 
-            case R.id.get_address:
+            case MENU_GET_ADDRESS:
             	getAddress();
                 return true;
                 
-            case R.id.start_updates:
-            	if (item.isChecked()) item.setChecked(false);
-                else item.setChecked(true);
-            	startUpdates();
+            case MENU_UPDATES:
+            	if (mUpdatesRequested) {
+            		stopUpdates();
+            	} else {
+            		startUpdates();
+            	}
+            	invalidateOptionsMenu ();
                 return true;
-                
-            case R.id.stop_updates:
-            	if (item.isChecked()) item.setChecked(false);
-                else item.setChecked(true);
-            	stopUpdates();
-                return true;    
-                
-            case R.id.exit:
+                 
+            case MENU_EXIT:
             	if (mUpdatesRequested) {
             		stopUpdates();
                 }
@@ -196,8 +197,32 @@ public class MainActivity extends FragmentActivity implements
         }
     }
     
+    @Override
+    public boolean onPrepareOptionsMenu (Menu menu){
+    	menu.clear();
+    	buildMenu(menu);
+    	return super.onPrepareOptionsMenu(menu);
+    }
    
-    /*
+    private void buildMenu(Menu menu) {
+    	menu.add(Menu.NONE, MENU_GET_LOCATION, Menu.NONE, R.string.get_location)
+    		.setIcon(R.drawable.ic_action_location_found).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    	menu.add(Menu.NONE, MENU_GET_ADDRESS, Menu.NONE, R.string.get_address)
+    		.setIcon(R.drawable.ic_action_map).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    	
+    	// Depending on the refresh state,  add refresh or stop-refresh menu option
+    	if (!mUpdatesRequested) {
+    		menu.add(Menu.NONE, MENU_UPDATES, Menu.NONE, R.string.start_updates)
+    			.setIcon(R.drawable.ic_action_refresh).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    	} else {
+    		menu.add(Menu.NONE, MENU_UPDATES, Menu.NONE, R.string.stop_updates)
+    			.setIcon(R.drawable.ic_action_location_off).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    	}
+    	
+    	menu.add(Menu.NONE, MENU_EXIT, Menu.NONE, R.string.exit).setIcon(R.drawable.ic_action_map);
+	}
+
+	/*
      * Called when the Activity is no longer visible at all.
      * Stop updates and disconnect.
      */
