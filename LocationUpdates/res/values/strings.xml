@@ -31,7 +31,7 @@
     <string name="latitude_longitude">%1$.8f, %2$.8f</string>
     
     <!-- Speed format -->
-    <string name="Speed_Format">%1$.1f</string>
+    <string name="Speed_Format">%1$.0f</string>
 
     <!-- Menu title -->
     <string name="action_settings">Settings</string>
@@ -40,6 +40,7 @@
     <string name="latlng">Lat/Long:</string>
     <string name="address">Address:</string>
     <string name="speed">Speed:</string>
+    <string name="unit">Kmh</string>
 
     <!-- Messages -->
     <string name="connected">Client connected</string>

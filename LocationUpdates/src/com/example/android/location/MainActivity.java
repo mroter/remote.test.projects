@@ -53,9 +53,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 
 /**
- * This the app's main Activity. It provides buttons for requesting the various features of the
- * app, displays the current location, the current address, and the status of the location client
- * and updating services.
+ * This is the app's main Activity. 
  *
  * {@link #getLocation} gets the current location using the Location Services getLastLocation()
  * function. {@link #getAddress} calls geocoding to get a street address for the current location.
@@ -86,6 +84,7 @@ public class MainActivity extends FragmentActivity implements
     private TextView mLatLng;
     private TextView mAddress;
     private TextView mSpeed;
+    private TextView mUnit;
     private ProgressBar mActivityIndicator;
     private TextView mConnectionStatus;
 
@@ -108,12 +107,13 @@ public class MainActivity extends FragmentActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main_layout);
 
         // Get handles to the UI view objects
         mLatLng = (TextView) findViewById(R.id.lat_lng);
         mAddress = (TextView) findViewById(R.id.address);
         mSpeed = (TextView) findViewById(R.id.Speed);
+        mUnit = (TextView) findViewById(R.id.label_unit);
         mActivityIndicator = (ProgressBar) findViewById(R.id.address_progress);
         mConnectionStatus = (TextView) findViewById(R.id.text_connection_status);
 
@@ -208,7 +208,7 @@ public class MainActivity extends FragmentActivity implements
     	menu.add(Menu.NONE, MENU_GET_LOCATION, Menu.NONE, R.string.get_location)
     		.setIcon(R.drawable.ic_action_location_found).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
     	menu.add(Menu.NONE, MENU_GET_ADDRESS, Menu.NONE, R.string.get_address)
-    		.setIcon(R.drawable.ic_action_map).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    		.setIcon(R.drawable.ic_action_place).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
     	
     	// Depending on the refresh state,  add refresh or stop-refresh menu option
     	if (!mUpdatesRequested) {
@@ -534,7 +534,7 @@ public class MainActivity extends FragmentActivity implements
         
         // In the UI, set the speed
         mSpeed.setText(LocationUtils.getSpeed(this, location));
-        //mSpeed.setText("0.0");
+        mUnit.setText(R.string.unit);
     }
 
     /**
@@ -557,6 +557,7 @@ public class MainActivity extends FragmentActivity implements
         Toast.makeText(this, R.string.location_updates_stopped, Toast.LENGTH_SHORT).show();
         mConnectionStatus.setText("");
         mSpeed.setText("");
+        mUnit.setText("");
     }
 
     /**
