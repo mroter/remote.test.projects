@@ -81,6 +81,7 @@
     <string name="unknown_activity_request_code">
         Received an unknown activity request code %1$d in onActivityResult.
     </string>
+    <string name="try_again">Please try again</string>
     
     <!-- Menu strings -->
     <string name="get_location">Get Location</string>

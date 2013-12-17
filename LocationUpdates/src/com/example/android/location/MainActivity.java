@@ -620,8 +620,8 @@ public class MainActivity extends FragmentActivity implements
                     exception1.printStackTrace();
 
                     // Return an error message
-                    return (getString(R.string.IO_Exception_getFromLocation));
-                    //return ("Please try again in few sec...");
+                    //return (getString(R.string.IO_Exception_getFromLocation));
+                    return (getString(R.string.try_again));
 
                 // Catch incorrect latitude or longitude values
                 } catch (IllegalArgumentException exception2) {

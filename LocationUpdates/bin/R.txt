@@ -136,7 +136,7 @@ int string connection_error_sign_in_required 0x7f060026
 int string connection_error_unknown 0x7f060027
 int string connection_failed 0x7f060035
 int string disconnected 0x7f060036
-int string exit 0x7f060052
+int string exit 0x7f060053
 int string get_address 0x7f060037
 int string get_location 0x7f060038
 int string illegal_argument_exception 0x7f060039
@@ -161,12 +161,13 @@ int string play_services_available 0x7f06004b
 int string request_location_updates_in_progress 0x7f06004c
 int string resolved 0x7f060048
 int string speed 0x7f060031
-int string start_updates 0x7f06004f
-int string stop_updates 0x7f060050
+int string start_updates 0x7f060050
+int string stop_updates 0x7f060051
+int string try_again 0x7f06004f
 int string unit 0x7f060032
 int string unknown 0x7f06004d
 int string unknown_activity_request_code 0x7f06004e
-int string updates 0x7f060051
+int string updates 0x7f060052
 int style AppBaseTheme 0x7f090000
 int style AppTheme 0x7f090001
 int[] styleable AdsAttrs { 0x7f010000, 0x7f010001 }
