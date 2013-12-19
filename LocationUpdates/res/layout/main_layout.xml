@@ -1,71 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/ghost_white"
     android:orientation="vertical" >
-   
-    <RelativeLayout
-        android:id="@+id/main_layout"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:padding="8dip" >
-	
-	    <TextView
-	        android:id="@+id/label_lat_lng"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignParentLeft="true"
-	        android:layout_alignParentTop="true"
-	        android:text="@string/latlng"
-	        android:textSize="20sp" />
-	
-	    <TextView
-	        android:id="@+id/lat_lng"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignBaseline="@+id/label_lat_lng"
-	        android:layout_marginLeft="10dp"
-	        android:layout_toRightOf="@+id/label_lat_lng"
-	        android:textIsSelectable="true"
-	        android:textSize="20sp" />
-	
-	    <TextView
-	        android:id="@+id/label_address"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignParentLeft="true"
-	        android:layout_below="@+id/label_lat_lng"
-	        android:text="@string/address"
-	        android:textSize="20sp" />
-	
-	    <TextView
-	        android:id="@+id/address"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_toRightOf="@+id/label_address"
-	        android:layout_alignBaseline="@+id/label_address"
-	        android:layout_marginLeft="10dp"
-	        android:textSize="20sp"
-	        android:textIsSelectable="true"/>
-	   
-	  
-	    <ProgressBar
-	        android:id="@+id/address_progress"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_below="@id/lat_lng"
-	        android:layout_centerHorizontal="true"
-	        android:indeterminate="true"
-	        android:visibility="gone" />
-	
-	</RelativeLayout>
-
+  
     <RelativeLayout
         android:id="@+id/speed_layout"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginLeft="70dip"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginLeft="80dip"
         android:background="@drawable/speedometer" >
 
         <TextView
@@ -74,9 +18,8 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:textIsSelectable="true"
-            android:textSize="50sp" 
-            android:textColor="@color/white"
-            />
+            android:textSize="35sp" 
+            android:textColor="@color/white" />
 
     </RelativeLayout>
     
@@ -85,16 +28,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingLeft="8dip"
-        android:paddingTop="15dip" >
-	    
-        <TextView
-	        android:id="@+id/text_connection_status"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="@string/unknown"
-	        android:textColor="@color/blue"
-	        android:textIsSelectable="true" />
+        android:paddingRight="8dip"
+        android:paddingBottom="8dip"
+        android:paddingTop="8dip" >
+
+        
+        <fragment 
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.MapFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
         
     </RelativeLayout>
+    
+    
 
 </LinearLayout>

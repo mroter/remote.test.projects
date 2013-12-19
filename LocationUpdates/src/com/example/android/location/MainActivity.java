@@ -29,6 +29,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -41,7 +45,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +54,15 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * This is the app's main Activity. 
@@ -65,8 +77,10 @@ import com.google.android.gms.location.LocationRequest;
  */
 public class MainActivity extends FragmentActivity implements
         LocationListener,
+        SensorEventListener,
+        OnInfoWindowClickListener,
         GooglePlayServicesClient.ConnectionCallbacks,
-        GooglePlayServicesClient.OnConnectionFailedListener {
+        GooglePlayServicesClient.OnConnectionFailedListener  {
 
 	private static final int MENU_GET_LOCATION = Menu.FIRST;
 	private static final int MENU_GET_ADDRESS = Menu.FIRST +1;
@@ -81,11 +95,24 @@ public class MainActivity extends FragmentActivity implements
     private LocationClient mLocationClient;
 
     // Handles to UI widgets
-    private TextView mLatLng;
-    private TextView mAddress;
+
+    private String mAddress;
     private TextView mSpeed;
-    private ProgressBar mActivityIndicator;
-    private TextView mConnectionStatus;
+ 
+    
+    @SuppressWarnings("unused")
+	private String mConnectionStatus;
+    
+    @SuppressWarnings("unused")
+	private String mLatLng;
+    
+    // Google Map
+    private GoogleMap map;
+    private Marker mMarker;
+    
+    // Sensor 
+    private SensorManager mSensorManager;
+    private Sensor mCompass;
 
     // Handle to SharedPreferences for this app
     SharedPreferences mPrefs;
@@ -109,12 +136,9 @@ public class MainActivity extends FragmentActivity implements
         setContentView(R.layout.main_layout);
 
         // Get handles to the UI view objects
-        mLatLng = (TextView) findViewById(R.id.lat_lng);
-        mAddress = (TextView) findViewById(R.id.address);
         mSpeed = (TextView) findViewById(R.id.Speed);
-        mActivityIndicator = (ProgressBar) findViewById(R.id.address_progress);
-        mConnectionStatus = (TextView) findViewById(R.id.text_connection_status);
-
+        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+                        
         // Create a new global location parameters object
         mLocationRequest = LocationRequest.create();
 
@@ -151,8 +175,74 @@ public class MainActivity extends FragmentActivity implements
             ActionBar actionBar = getActionBar();
             actionBar.setHomeButtonEnabled(false);
         }
+        
+        // Initial zoom of the map
+        map.setMyLocationEnabled(true);
+        map.setBuildingsEnabled(true);
+        map.setIndoorEnabled(true);
+        map.setTrafficEnabled(true);
+        // map.getUiSettings().setCompassEnabled(true); it is the default 
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(32.074, 34.791), 10));
+        
+        // Setup a listener for Marker click events
+        map.setOnInfoWindowClickListener(this);
+        
+        //TODO remove
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mCompass = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        
+     // Setting a custom info window adapter for the google map
+        map.setInfoWindowAdapter(new InfoWindowAdapter() {
+ 
+            // Use default InfoWindow frame
+            @Override
+            public View getInfoWindow(Marker arg0) {
+                return null;
+            }
+ 
+            // Defines the contents of the InfoWindow
+            @Override
+            public View getInfoContents(Marker arg0) {
+ 
+                // Getting view from the layout file info_window_layout
+                View v = getLayoutInflater().inflate(R.layout.info_window, null);
+ 
+                // Getting the position from the marker
+                LatLng latLng = arg0.getPosition();
+ 
+                // Getting reference to the TextView to set latitude
+                TextView tvLat = (TextView) v.findViewById(R.id.tv_lat);
+ 
+                // Getting reference to the TextView to set longitude
+                TextView tvLng = (TextView) v.findViewById(R.id.tv_lng);
+                
+             // Getting reference to the TextView to set address
+                TextView tvAddress = (TextView) v.findViewById(R.id.tv_address);
+ 
+                // Setting the latitude
+                tvLat.setText("Latitude:  " + latLng.latitude);
+ 
+                // Setting the longitude
+                tvLng.setText("Longitude: "+ latLng.longitude);
+                
+             // Setting the address
+                tvAddress.setText("Address: " + mAddress);
+ 
+                // Returning the view containing InfoWindow contents
+                return v;
+ 
+            }
+        });
 
     }
+    
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+    	
+    	if (marker.equals(mMarker)) {
+    		marker.setVisible(false);
+    	}
+      }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -250,6 +340,8 @@ public class MainActivity extends FragmentActivity implements
         mEditor.commit();
 
         super.onPause();
+        // Unregister compass sensor while the Activity is paused 
+        mSensorManager.unregisterListener(this);
     }
 
     /*
@@ -282,6 +374,9 @@ public class MainActivity extends FragmentActivity implements
             mEditor.putBoolean(LocationUtils.KEY_UPDATES_REQUESTED, false);
             mEditor.commit();
         }
+        
+        //
+        mSensorManager.registerListener(this, mCompass, SensorManager.SENSOR_DELAY_NORMAL);
 
     }
     
@@ -318,7 +413,7 @@ public class MainActivity extends FragmentActivity implements
                         // Display the result
                         //mConnectionState.setText(R.string.connected);
                         Toast.makeText(this, R.string.connected, Toast.LENGTH_SHORT).show();
-                        mConnectionStatus.setText(R.string.resolved);
+                        mConnectionStatus = getString(R.string.resolved);
                     break;
 
                     // If any other result was returned by Google Play services
@@ -329,7 +424,7 @@ public class MainActivity extends FragmentActivity implements
                         // Display the result
                         //mConnectionState.setText(R.string.disconnected);
                         Toast.makeText(this, R.string.disconnected, Toast.LENGTH_SHORT).show();
-                        mConnectionStatus.setText(R.string.no_resolution);
+                        mConnectionStatus = getString(R.string.no_resolution);
 
                     break;
                 }
@@ -344,6 +439,17 @@ public class MainActivity extends FragmentActivity implements
         }
     }
 
+    
+    @Override
+    public final void onAccuracyChanged(Sensor sensor, int accuracy) {
+      // Do something here if sensor accuracy changes.
+    }
+
+    @Override
+    public final void onSensorChanged(SensorEvent event) {
+    	//TODO add code to rotate the map   	
+    }
+    
     /**
      * Verify that Google Play services is available before making a request.
      *
@@ -384,14 +490,27 @@ public class MainActivity extends FragmentActivity implements
      */
     public void getLocation() {
 
-        // If Google Play Services is available
+    	// If Google Play Services is available
         if (servicesConnected()) {
 
             // Get the current location
             Location currentLocation = mLocationClient.getLastLocation();
+            LatLng lat_lng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+            String location = LocationUtils.getLatLng(this, currentLocation);
 
             // Display the current location in the UI
-            mLatLng.setText(LocationUtils.getLatLng(this, currentLocation));
+            mLatLng =location;
+            
+            // Position the map to my current location and zoom in
+            updateCamera(currentLocation);      
+    
+            mMarker = map.addMarker(new MarkerOptions()
+            .title("My Location")
+            .snippet(location)
+            .position(lat_lng)
+            .alpha(1.0f));
+            
+     
         }
     }
 
@@ -417,9 +536,6 @@ public class MainActivity extends FragmentActivity implements
 
             // Get the current location
             Location currentLocation = mLocationClient.getLastLocation();
-
-            // Turn the indefinite activity indicator on (progress bar)
-            mActivityIndicator.setVisibility(View.VISIBLE);
 
             // Start the background task
             (new MainActivity.GetAddressTask(this)).execute(currentLocation);
@@ -462,7 +578,7 @@ public class MainActivity extends FragmentActivity implements
      */
     @Override
     public void onConnected(Bundle bundle) {
-        mConnectionStatus.setText(R.string.connected);
+        mConnectionStatus = getString(R.string.connected);
 
         if (mUpdatesRequested) {
             startPeriodicUpdates();
@@ -475,7 +591,7 @@ public class MainActivity extends FragmentActivity implements
      */
     @Override
     public void onDisconnected() {
-        mConnectionStatus.setText(R.string.disconnected);
+        mConnectionStatus = getString(R.string.disconnected);
     }
 
     /*
@@ -525,13 +641,17 @@ public class MainActivity extends FragmentActivity implements
     public void onLocationChanged(Location location) {
 
         // Report to the UI that the location was updated
-        mConnectionStatus.setText(R.string.location_updated);
+        mConnectionStatus = getString(R.string.location_updated);
         
         // In the UI, set the latitude and longitude to the value received
-        mLatLng.setText(LocationUtils.getLatLng(this, location));
+        mLatLng = LocationUtils.getLatLng(this, location);
         
         // In the UI, set the speed
         mSpeed.setText(LocationUtils.getSpeed(this, location));
+        
+        // Set the location on the map
+        updateCamera(location);
+       
     }
 
     /**
@@ -552,8 +672,21 @@ public class MainActivity extends FragmentActivity implements
         mLocationClient.removeLocationUpdates(this);
         //mConnectionState.setText(R.string.location_updates_stopped);
         Toast.makeText(this, R.string.location_updates_stopped, Toast.LENGTH_SHORT).show();
-        mConnectionStatus.setText("");
+        mConnectionStatus = null;
         mSpeed.setText("");
+    }
+    
+    public void updateCamera(Location location) {
+    	
+    	// .tilt(65.5f)?
+    	
+    	 if (location != null) {
+    		 CameraPosition currentPlace = new CameraPosition.Builder()
+                .target(new LatLng(location.getLatitude(), location.getLongitude()))
+                .bearing(location.getBearing()).zoom(LocationUtils.mapZoom(this, location)).build();
+        
+    		 map.moveCamera(CameraUpdateFactory.newCameraPosition(currentPlace));
+    	 }
     }
 
     /**
@@ -675,11 +808,9 @@ public class MainActivity extends FragmentActivity implements
         @Override
         protected void onPostExecute(String address) {
 
-            // Turn off the progress bar
-            mActivityIndicator.setVisibility(View.GONE);
 
             // Set the address in the UI
-            mAddress.setText(address);
+            mAddress = address;
         }
     }
 

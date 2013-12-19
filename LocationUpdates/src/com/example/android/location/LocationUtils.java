@@ -96,7 +96,6 @@ public final class LocationUtils {
         if (currentLocation != null) {
         	// Return the speed as strings
             return context.getString(R.string.Speed_Format, currentLocation.getSpeed()*3.6);
-        	//return "0.0";
                     
         } else {
 
@@ -104,4 +103,19 @@ public final class LocationUtils {
             return EMPTY_STRING;
         }
     }
+    
+    public static int mapZoom(Context context, Location currentLocation) {
+    	
+    	// Default zoom
+    	int zoom = 15;
+   	
+    	if (currentLocation != null) {
+    		int speed = Math.round(currentLocation.getSpeed()*3.6f);
+        	if (speed < 30) zoom = 18;
+        	else if (speed < 50) zoom = 17;
+    	}
+    	
+    	return zoom;
+    }
+  
 }
