@@ -29,10 +29,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -77,7 +73,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
  */
 public class MainActivity extends FragmentActivity implements
         LocationListener,
-        SensorEventListener,
         OnInfoWindowClickListener,
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener  {
@@ -103,16 +98,10 @@ public class MainActivity extends FragmentActivity implements
     @SuppressWarnings("unused")
 	private String mConnectionStatus;
     
-    @SuppressWarnings("unused")
-	private String mLatLng;
-    
     // Google Map
     private GoogleMap map;
     private Marker mMarker;
-    
-    // Sensor 
-    private SensorManager mSensorManager;
-    private Sensor mCompass;
+
 
     // Handle to SharedPreferences for this app
     SharedPreferences mPrefs;
@@ -133,7 +122,7 @@ public class MainActivity extends FragmentActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_layout);
+        setContentView(R.layout.frame_layout);
 
         // Get handles to the UI view objects
         mSpeed = (TextView) findViewById(R.id.Speed);
@@ -186,11 +175,7 @@ public class MainActivity extends FragmentActivity implements
         
         // Setup a listener for Marker click events
         map.setOnInfoWindowClickListener(this);
-        
-        //TODO remove
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mCompass = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-        
+                      
      // Setting a custom info window adapter for the google map
         map.setInfoWindowAdapter(new InfoWindowAdapter() {
  
@@ -340,8 +325,6 @@ public class MainActivity extends FragmentActivity implements
         mEditor.commit();
 
         super.onPause();
-        // Unregister compass sensor while the Activity is paused 
-        mSensorManager.unregisterListener(this);
     }
 
     /*
@@ -375,9 +358,6 @@ public class MainActivity extends FragmentActivity implements
             mEditor.commit();
         }
         
-        //
-        mSensorManager.registerListener(this, mCompass, SensorManager.SENSOR_DELAY_NORMAL);
-
     }
     
     @Override
@@ -439,17 +419,7 @@ public class MainActivity extends FragmentActivity implements
         }
     }
 
-    
-    @Override
-    public final void onAccuracyChanged(Sensor sensor, int accuracy) {
-      // Do something here if sensor accuracy changes.
-    }
-
-    @Override
-    public final void onSensorChanged(SensorEvent event) {
-    	//TODO add code to rotate the map   	
-    }
-    
+   
     /**
      * Verify that Google Play services is available before making a request.
      *
@@ -482,11 +452,10 @@ public class MainActivity extends FragmentActivity implements
     }
 
     /**
-     * Invoked by the "Get Location" button.
+     * Invoked by the "Get Location" action.
      *
      * Calls getLastLocation() to get the current location
      *
-     * @param v The view object associated with this method, in this case a Button.
      */
     public void getLocation() {
 
@@ -496,21 +465,15 @@ public class MainActivity extends FragmentActivity implements
             // Get the current location
             Location currentLocation = mLocationClient.getLastLocation();
             LatLng lat_lng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-            String location = LocationUtils.getLatLng(this, currentLocation);
 
-            // Display the current location in the UI
-            mLatLng =location;
-            
             // Position the map to my current location and zoom in
-            updateCamera(currentLocation);      
-    
-            mMarker = map.addMarker(new MarkerOptions()
-            .title("My Location")
-            .snippet(location)
-            .position(lat_lng)
-            .alpha(1.0f));
+            updateCamera(currentLocation);
             
-     
+            // Get address async
+            getAddress();
+    
+            mMarker = map.addMarker(new MarkerOptions().position(lat_lng).alpha(0.9f));
+            
         }
     }
 
@@ -642,10 +605,7 @@ public class MainActivity extends FragmentActivity implements
 
         // Report to the UI that the location was updated
         mConnectionStatus = getString(R.string.location_updated);
-        
-        // In the UI, set the latitude and longitude to the value received
-        mLatLng = LocationUtils.getLatLng(this, location);
-        
+             
         // In the UI, set the speed
         mSpeed.setText(LocationUtils.getSpeed(this, location));
         
