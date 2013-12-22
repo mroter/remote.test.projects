@@ -175,6 +175,8 @@ public class MainActivity extends FragmentActivity implements
         map.setIndoorEnabled(true);
         map.setTrafficEnabled(true);
         // map.getUiSettings().setCompassEnabled(true); it is the default 
+        
+        // Set initial location and zoom of the map
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(32.074, 34.791), 10));
         
         // Setup a listener for Marker click events
