@@ -37,6 +37,10 @@ public final class LocationUtils {
     public static final String KEY_UPDATES_REQUESTED =
             "com.example.android.location.KEY_UPDATES_REQUESTED";
 
+ // Key for storing the "bearing" flag in shared preferences
+    public static final String KEY_BEARING =
+            "com.example.android.location.KEY_BEARING";
+    
     /*
      * Define a request code to send to Google Play services
      * This code is returned in Activity.onActivityResult

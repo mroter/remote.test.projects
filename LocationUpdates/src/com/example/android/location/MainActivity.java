@@ -115,6 +115,10 @@ public class MainActivity extends FragmentActivity implements
      *
      */
     boolean mUpdatesRequested = false;
+    
+    
+    // Initially there is no bearing
+    float mBearing = 0;
 
     /*
      * Initialize the Activity
@@ -320,8 +324,9 @@ public class MainActivity extends FragmentActivity implements
     @Override
     public void onPause() {
 
-        // Save the current setting for updates
+        // Save the current setting for updates & bearing
         mEditor.putBoolean(LocationUtils.KEY_UPDATES_REQUESTED, mUpdatesRequested);
+        mEditor.putFloat(LocationUtils.KEY_BEARING, mBearing);
         mEditor.commit();
 
         super.onPause();
@@ -355,6 +360,16 @@ public class MainActivity extends FragmentActivity implements
         // Otherwise, turn off location updates until requested
         } else {
             mEditor.putBoolean(LocationUtils.KEY_UPDATES_REQUESTED, false);
+            mEditor.commit();
+        }
+        
+     // If the app already has a setting for bearing, get it
+        if (mPrefs.contains(LocationUtils.KEY_BEARING)) {
+            mBearing = mPrefs.getFloat(LocationUtils.KEY_BEARING, 0f);
+
+        // Otherwise add bearing of zero == no bearing
+        } else {
+            mEditor.putFloat(LocationUtils.KEY_BEARING, 0f);
             mEditor.commit();
         }
         
@@ -636,17 +651,20 @@ public class MainActivity extends FragmentActivity implements
         mSpeed.setText("");
     }
     
-    public void updateCamera(Location location) {
+    /**
+     * Updating the map view by moving the camera.
+     * 
+     * @param location
+     */
+    private void updateCamera(Location location) {
     	
-    	// .tilt(65.5f)?
-    	
-    	 if (location != null) {
-    		 CameraPosition currentPlace = new CameraPosition.Builder()
-                .target(new LatLng(location.getLatitude(), location.getLongitude()))
-                .bearing(location.getBearing()).zoom(LocationUtils.mapZoom(this, location)).build();
-        
-    		 map.moveCamera(CameraUpdateFactory.newCameraPosition(currentPlace));
-    	 }
+    	if (location != null) {
+    		if (location.hasBearing()) 	mBearing = location.getBearing();
+	    	CameraPosition currentPlace = new CameraPosition.Builder()
+	                .target(new LatLng(location.getLatitude(), location.getLongitude()))
+	                .bearing(mBearing).zoom(LocationUtils.mapZoom(this, location)).build();
+	    	map.moveCamera(CameraUpdateFactory.newCameraPosition(currentPlace));
+    	}
     }
 
     /**
