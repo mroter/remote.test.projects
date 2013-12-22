@@ -40,7 +40,6 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,7 +51,6 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -90,10 +88,7 @@ public class MainActivity extends FragmentActivity implements
     private LocationClient mLocationClient;
 
     // Handles to UI widgets
-
-    private String mAddress;
     private TextView mSpeed;
- 
     
     @SuppressWarnings("unused")
 	private String mConnectionStatus;
@@ -115,10 +110,12 @@ public class MainActivity extends FragmentActivity implements
      *
      */
     boolean mUpdatesRequested = false;
-    
-    
+        
     // Initially there is no bearing
     float mBearing = 0;
+    
+    // Create InfoWindow object
+    InfoWindow infoWindow; 
 
     /*
      * Initialize the Activity
@@ -179,51 +176,13 @@ public class MainActivity extends FragmentActivity implements
         // Set initial location and zoom of the map
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(32.074, 34.791), 10));
         
-        // Setup a listener for Marker click events
-        map.setOnInfoWindowClickListener(this);
+
                       
      // Setting a custom info window adapter for the google map
-        map.setInfoWindowAdapter(new InfoWindowAdapter() {
- 
-            // Use default InfoWindow frame
-            @Override
-            public View getInfoWindow(Marker arg0) {
-                return null;
-            }
- 
-            // Defines the contents of the InfoWindow
-            @Override
-            public View getInfoContents(Marker arg0) {
- 
-                // Getting view from the layout file info_window_layout
-                View v = getLayoutInflater().inflate(R.layout.info_window, null);
- 
-                // Getting the position from the marker
-                LatLng latLng = arg0.getPosition();
- 
-                // Getting reference to the TextView to set latitude
-                TextView tvLat = (TextView) v.findViewById(R.id.tv_lat);
- 
-                // Getting reference to the TextView to set longitude
-                TextView tvLng = (TextView) v.findViewById(R.id.tv_lng);
-                
-             // Getting reference to the TextView to set address
-                TextView tvAddress = (TextView) v.findViewById(R.id.tv_address);
- 
-                // Setting the latitude
-                tvLat.setText("Latitude:  " + latLng.latitude);
- 
-                // Setting the longitude
-                tvLng.setText("Longitude: "+ latLng.longitude);
-                
-             // Setting the address
-                tvAddress.setText("Address: " + mAddress);
- 
-                // Returning the view containing InfoWindow contents
-                return v;
- 
-            }
-        });
+        infoWindow = new InfoWindow(getLayoutInflater(), MainActivity.this);
+        map.setInfoWindowAdapter(infoWindow);
+     // Setup a listener for Marker click events
+        map.setOnInfoWindowClickListener(this);
 
     }
     
@@ -790,7 +749,7 @@ public class MainActivity extends FragmentActivity implements
 
 
             // Set the address in the UI
-            mAddress = address;
+            infoWindow.setAddress(address);
         }
     }
 
