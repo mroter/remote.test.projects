@@ -1,0 +1,31 @@
+<resources>
+
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+    <string name="traffic">Traffic</string>
+    <string name="traffic_summary">Display Traffic information</string>
+    <string name="buildings">Buildings</string>
+    <string name="buildings_summary">Display buildings</string>
+    <string name="indoor">Indoor</string>
+    <string name="indoor_summary">Display indoor layouts</string>
+    <string name="pref_title_maptype">Map Type</string>
+
+    <string-array name="pref_maptype_titles">
+        <item>Normal</item>
+        <item>Satellite</item>
+        <item>Terrain</item>
+        <item>Hybrid</item>
+    </string-array>
+    <string-array name="pref_maptype_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
+</resources>

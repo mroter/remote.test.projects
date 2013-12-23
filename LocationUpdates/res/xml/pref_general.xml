@@ -1,0 +1,32 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="traffic"
+        android:summary="@string/traffic_summary"
+        android:title="@string/traffic" />
+    
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="buildings"
+        android:summary="@string/buildings_summary"
+        android:title="@string/buildings" />
+        
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="indoor"
+        android:summary="@string/indoor_summary"
+        android:title="@string/indoor" />
+
+
+    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+    <ListPreference
+        android:defaultValue="1"
+        android:entries="@array/pref_maptype_titles"
+        android:entryValues="@array/pref_maptype_values"
+        android:key="maptype_list"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_title_maptype" />
+
+</PreferenceScreen>

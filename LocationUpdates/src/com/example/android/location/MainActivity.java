@@ -35,12 +35,14 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -86,7 +88,8 @@ public class MainActivity extends FragmentActivity implements
 	private static final int TRAFFIC_ENABLED = Menu.FIRST + 21;
 	private static final int TRAFFIC_DISABLED = Menu.FIRST + 22;
 	private static final int MENU_UPDATES = Menu.FIRST + 3;
-	private static final int MENU_EXIT = Menu.FIRST + 4;
+	private static final int MENU_SETTINGS = Menu.FIRST + 4;
+	private static final int MENU_EXIT = Menu.FIRST + 5;
 	
 	
 	
@@ -133,6 +136,8 @@ public class MainActivity extends FragmentActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frame_layout);
+        
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // Get handles to the UI view objects
         mSpeed = (TextView) findViewById(R.id.Speed);
@@ -157,9 +162,12 @@ public class MainActivity extends FragmentActivity implements
 
         // Open Shared Preferences
         mPrefs = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
-
+        
         // Get an editor
         mEditor = mPrefs.edit();
+        
+        // Load Preferences
+        loadPref();
 
         /*
          * Create a new location client, using the enclosing class to
@@ -177,10 +185,6 @@ public class MainActivity extends FragmentActivity implements
         
         // Initial zoom of the map
         map.setMyLocationEnabled(true);
-        map.setBuildingsEnabled(true);
-        map.setIndoorEnabled(true);
-
-        // map.getUiSettings().setCompassEnabled(true); it is the default 
         
         // Set initial location and zoom of the map
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(32.074, 34.791), 10));
@@ -259,6 +263,12 @@ public class MainActivity extends FragmentActivity implements
                 this.finish();
                 return true; 
                 
+            case MENU_SETTINGS:
+            	 Intent intent = new Intent();
+                 intent.setClass(MainActivity.this, SetPreferenceActivity.class);
+                 startActivityForResult(intent, 0); 
+                return true;
+                
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -275,20 +285,19 @@ public class MainActivity extends FragmentActivity implements
     	menu.add(Menu.NONE, MENU_GET_LOCATION, Menu.NONE, R.string.get_location)
     		.setIcon(R.drawable.ic_action_place).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
     	
-    	/*menu.add(MENU_MAP, MENU_MAP, Menu.NONE, R.string.get_address)
-    		.setIcon(R.drawable.ic_action_map).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);*/
+    	menu.add(Menu.NONE, MENU_SETTINGS, Menu.NONE, "Settings")
+    		.setIcon(R.drawable.ic_action_map).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
     	       	
     	
     	SubMenu mapType = menu.addSubMenu("Map Type").setHeaderIcon(R.drawable.ic_action_map);
     	mapType.add(MENU_MAP, MAP_TYPE_NORMAL, Menu.NONE, "Map");
-    	mapType.add(MENU_MAP, MAP_TYPE_SATELLITE , Menu.NONE, "Satellight");
+    	mapType.add(MENU_MAP, MAP_TYPE_SATELLITE , Menu.NONE, "Satellite");
     	mapType.add(MENU_MAP, MAP_TYPE_HYBRID , Menu.NONE, "Hybrid");
     	mapType.add(MENU_MAP, MAP_TYPE_TERRAIN , Menu.NONE, "Terrain");
     	    	
     	SubMenu traffic = menu.addSubMenu("Traffic").setHeaderIcon(R.drawable.ic_action_map);
     	traffic.add(MENU_TRAFFIC, TRAFFIC_ENABLED , Menu.NONE, "Enabled");
     	traffic.add(MENU_TRAFFIC, TRAFFIC_DISABLED, Menu.NONE, "Disabled");
-    	
     	
     	
     	// Depending on the refresh state,  add refresh or stop-refresh menu option
@@ -356,26 +365,8 @@ public class MainActivity extends FragmentActivity implements
      */
     @Override
     public void onResume() {
-        super.onResume();
-        // If the app already has a setting for getting location updates, get it
-        if (mPrefs.contains(LocationUtils.KEY_UPDATES_REQUESTED)) {
-            mUpdatesRequested = mPrefs.getBoolean(LocationUtils.KEY_UPDATES_REQUESTED, false);
-
-        // Otherwise, turn off location updates until requested
-        } else {
-            mEditor.putBoolean(LocationUtils.KEY_UPDATES_REQUESTED, false);
-            mEditor.commit();
-        }
-        
-     // If the app already has a setting for bearing, get it
-        if (mPrefs.contains(LocationUtils.KEY_BEARING)) {
-            mBearing = mPrefs.getFloat(LocationUtils.KEY_BEARING, 0f);
-
-        // Otherwise add bearing of zero == no bearing
-        } else {
-            mEditor.putFloat(LocationUtils.KEY_BEARING, 0f);
-            mEditor.commit();
-        }
+        super.onResume();       
+        loadPref();
         
     }
     
@@ -430,13 +421,59 @@ public class MainActivity extends FragmentActivity implements
 
             // If any other request code was received
             default:
-               // Report that this Activity received an unknown requestCode
+               /*
+            	// Report that this Activity received an unknown requestCode
                Log.d(LocationUtils.APPTAG,
                        getString(R.string.unknown_activity_request_code, requestCode));
-
-               break;
+               */
+            	loadPref();
+            	break;
         }
     }
+    
+    private void loadPref(){
+   	
+        // If the app already has a setting for getting location updates, get it
+        if (mPrefs.contains(LocationUtils.KEY_UPDATES_REQUESTED)) {
+            mUpdatesRequested = mPrefs.getBoolean(LocationUtils.KEY_UPDATES_REQUESTED, false);
+
+        // Otherwise, turn off location updates until requested
+        } else {
+            mEditor.putBoolean(LocationUtils.KEY_UPDATES_REQUESTED, false);
+            mEditor.commit();
+        }
+        
+        // If the app already has a setting for bearing, get it
+        if (mPrefs.contains(LocationUtils.KEY_BEARING)) {
+            mBearing = mPrefs.getFloat(LocationUtils.KEY_BEARING, 0f);
+
+        // Otherwise add bearing of zero == no bearing
+        } else {
+            mEditor.putFloat(LocationUtils.KEY_BEARING, 0f);
+            mEditor.commit();
+        }
+        
+        SharedPreferences mySharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);       
+        if (mySharedPreferences.contains("traffic")) {
+        	map.setTrafficEnabled(mySharedPreferences.getBoolean("traffic", false));
+        }
+        
+        if (mySharedPreferences.contains("buildings")) {
+        	map.setBuildingsEnabled(mySharedPreferences.getBoolean("buildings", false));
+        }
+
+        if (mySharedPreferences.contains("indoor")) {
+        	map.setIndoorEnabled(mySharedPreferences.getBoolean("indoor", false));
+        }
+
+        if (mySharedPreferences.contains("maptype_list")) {
+        	//int type = mySharedPreferences.getInt("maptype_list", 1);
+        	// map.setMapType(mySharedPreferences.getInt("maptype_list", 1));
+
+        }
+    }
+    	        
+
 
    
     /**
