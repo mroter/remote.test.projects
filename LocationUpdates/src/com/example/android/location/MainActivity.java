@@ -40,6 +40,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,9 +77,17 @@ public class MainActivity extends FragmentActivity implements
         GooglePlayServicesClient.OnConnectionFailedListener  {
 
 	private static final int MENU_GET_LOCATION = Menu.FIRST;
-	private static final int MENU_GET_ADDRESS = Menu.FIRST +1;
-	private static final int MENU_UPDATES = Menu.FIRST + 2;
-	private static final int MENU_EXIT = Menu.FIRST + 3;
+	private static final int MENU_MAP = Menu.FIRST +1;
+	private static final int MAP_TYPE_NORMAL = Menu.FIRST + 11;
+	private static final int MAP_TYPE_SATELLITE = Menu.FIRST + 12;
+	private static final int MAP_TYPE_TERRAIN = Menu.FIRST + 13;
+	private static final int MAP_TYPE_HYBRID = Menu.FIRST + 14;
+	private static final int MENU_TRAFFIC = Menu.FIRST + 2;
+	private static final int TRAFFIC_ENABLED = Menu.FIRST + 21;
+	private static final int TRAFFIC_DISABLED = Menu.FIRST + 22;
+	private static final int MENU_UPDATES = Menu.FIRST + 3;
+	private static final int MENU_EXIT = Menu.FIRST + 4;
+	
 	
 	
 	// A request to connect to Location Services
@@ -170,7 +179,7 @@ public class MainActivity extends FragmentActivity implements
         map.setMyLocationEnabled(true);
         map.setBuildingsEnabled(true);
         map.setIndoorEnabled(true);
-        map.setTrafficEnabled(true);
+
         // map.getUiSettings().setCompassEnabled(true); it is the default 
         
         // Set initial location and zoom of the map
@@ -197,7 +206,7 @@ public class MainActivity extends FragmentActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
     	super.onCreateOptionsMenu(menu);
-    	buildMenu(menu);        
+    	buildMenu(menu);
         return true;
     }
     
@@ -210,10 +219,42 @@ public class MainActivity extends FragmentActivity implements
                 getLocation();
                 return true;
                 
-            case MENU_GET_ADDRESS:
-            	getAddress();
+            case MAP_TYPE_SATELLITE:
+            	map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+            	if (item.isChecked()) item.setChecked(false);
+                else item.setChecked(true);
                 return true;
                 
+             case MAP_TYPE_NORMAL:
+             	map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+             	if (item.isChecked()) item.setChecked(false);
+                else item.setChecked(true);
+                 return true;
+                 
+             case MAP_TYPE_HYBRID:
+              	map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+              	if (item.isChecked()) item.setChecked(false);
+                else item.setChecked(true);
+                  return true;
+                  
+             case MAP_TYPE_TERRAIN:
+               	map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+               	if (item.isChecked()) item.setChecked(false);
+                else item.setChecked(true);
+                return true;
+                   
+             case TRAFFIC_DISABLED:
+                 map.setTrafficEnabled(false);
+                 if (item.isChecked()) item.setChecked(false);
+                 else item.setChecked(true);
+                    return true;
+                    
+             case TRAFFIC_ENABLED:
+                 map.setTrafficEnabled(true);
+                 if (item.isChecked()) item.setChecked(false);
+                 else item.setChecked(true);
+                    return true;
+                 
             case MENU_UPDATES:
             	if (mUpdatesRequested) {
             		stopUpdates();
@@ -242,11 +283,25 @@ public class MainActivity extends FragmentActivity implements
     	return super.onPrepareOptionsMenu(menu);
     }
    
-    private void buildMenu(Menu menu) {
+    private void buildMenu(Menu menu) {         
     	menu.add(Menu.NONE, MENU_GET_LOCATION, Menu.NONE, R.string.get_location)
-    		.setIcon(R.drawable.ic_action_location_found).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-    	menu.add(Menu.NONE, MENU_GET_ADDRESS, Menu.NONE, R.string.get_address)
     		.setIcon(R.drawable.ic_action_place).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    	
+    	/*menu.add(MENU_MAP, MENU_MAP, Menu.NONE, R.string.get_address)
+    		.setIcon(R.drawable.ic_action_map).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);*/
+    	       	
+    	
+    	SubMenu mapType = menu.addSubMenu("Map Type").setHeaderIcon(R.drawable.ic_action_map);
+    	mapType.add(MENU_MAP, MAP_TYPE_NORMAL, Menu.NONE, "Map");
+    	mapType.add(MENU_MAP, MAP_TYPE_SATELLITE , Menu.NONE, "Satellight");
+    	mapType.add(MENU_MAP, MAP_TYPE_HYBRID , Menu.NONE, "Hybrid");
+    	mapType.add(MENU_MAP, MAP_TYPE_TERRAIN , Menu.NONE, "Terrain");
+    	    	
+    	SubMenu traffic = menu.addSubMenu("Traffic").setHeaderIcon(R.drawable.ic_action_map);
+    	traffic.add(MENU_TRAFFIC, TRAFFIC_ENABLED , Menu.NONE, "Enabled");
+    	traffic.add(MENU_TRAFFIC, TRAFFIC_DISABLED, Menu.NONE, "Disabled");
+    	
+    	
     	
     	// Depending on the refresh state,  add refresh or stop-refresh menu option
     	if (!mUpdatesRequested) {
@@ -462,7 +517,7 @@ public class MainActivity extends FragmentActivity implements
      */
     // For Eclipse with ADT, suppress warnings about Geocoder.isPresent()
     @SuppressLint("NewApi")
-    public void getAddress() {
+    private void getAddress() {
 
         // In Gingerbread and later, use Geocoder.isPresent() to see if a geocoder is available.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && !Geocoder.isPresent()) {
