@@ -221,39 +221,27 @@ public class MainActivity extends FragmentActivity implements
                 
             case MAP_TYPE_SATELLITE:
             	map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-            	if (item.isChecked()) item.setChecked(false);
-                else item.setChecked(true);
-                return true;
+            	return true;
                 
              case MAP_TYPE_NORMAL:
              	map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-             	if (item.isChecked()) item.setChecked(false);
-                else item.setChecked(true);
-                 return true;
+             	return true;
                  
              case MAP_TYPE_HYBRID:
               	map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-              	if (item.isChecked()) item.setChecked(false);
-                else item.setChecked(true);
-                  return true;
+                return true;
                   
              case MAP_TYPE_TERRAIN:
                	map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-               	if (item.isChecked()) item.setChecked(false);
-                else item.setChecked(true);
                 return true;
                    
              case TRAFFIC_DISABLED:
                  map.setTrafficEnabled(false);
-                 if (item.isChecked()) item.setChecked(false);
-                 else item.setChecked(true);
-                    return true;
+                 return true;
                     
              case TRAFFIC_ENABLED:
                  map.setTrafficEnabled(true);
-                 if (item.isChecked()) item.setChecked(false);
-                 else item.setChecked(true);
-                    return true;
+                 return true;
                  
             case MENU_UPDATES:
             	if (mUpdatesRequested) {
