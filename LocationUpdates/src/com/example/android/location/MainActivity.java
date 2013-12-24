@@ -41,7 +41,6 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -79,17 +78,9 @@ public class MainActivity extends FragmentActivity implements
         GooglePlayServicesClient.OnConnectionFailedListener  {
 
 	private static final int MENU_GET_LOCATION = Menu.FIRST;
-	private static final int MENU_MAP = Menu.FIRST +1;
-	private static final int MAP_TYPE_NORMAL = Menu.FIRST + 11;
-	private static final int MAP_TYPE_SATELLITE = Menu.FIRST + 12;
-	private static final int MAP_TYPE_TERRAIN = Menu.FIRST + 13;
-	private static final int MAP_TYPE_HYBRID = Menu.FIRST + 14;
-	private static final int MENU_TRAFFIC = Menu.FIRST + 2;
-	private static final int TRAFFIC_ENABLED = Menu.FIRST + 21;
-	private static final int TRAFFIC_DISABLED = Menu.FIRST + 22;
-	private static final int MENU_UPDATES = Menu.FIRST + 3;
-	private static final int MENU_SETTINGS = Menu.FIRST + 4;
-	private static final int MENU_EXIT = Menu.FIRST + 5;
+	private static final int MENU_UPDATES = Menu.FIRST + 1;
+	private static final int MENU_SETTINGS = Menu.FIRST + 2;
+	private static final int MENU_EXIT = Menu.FIRST + 3;
 	
 	
 	
@@ -222,30 +213,6 @@ public class MainActivity extends FragmentActivity implements
             case MENU_GET_LOCATION:
                 getLocation();
                 return true;
-                
-            case MAP_TYPE_SATELLITE:
-            	map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-            	return true;
-                
-             case MAP_TYPE_NORMAL:
-             	map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-             	return true;
-                 
-             case MAP_TYPE_HYBRID:
-              	map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-                return true;
-                  
-             case MAP_TYPE_TERRAIN:
-               	map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-                return true;
-                   
-             case TRAFFIC_DISABLED:
-                 map.setTrafficEnabled(false);
-                 return true;
-                    
-             case TRAFFIC_ENABLED:
-                 map.setTrafficEnabled(true);
-                 return true;
                  
             case MENU_UPDATES:
             	if (mUpdatesRequested) {
@@ -283,31 +250,18 @@ public class MainActivity extends FragmentActivity implements
    
     private void buildMenu(Menu menu) {         
     	menu.add(Menu.NONE, MENU_GET_LOCATION, Menu.NONE, R.string.get_location)
-    		.setIcon(R.drawable.ic_action_place).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-    	
-    	menu.add(Menu.NONE, MENU_SETTINGS, Menu.NONE, "Settings")
-    		.setIcon(R.drawable.ic_action_map).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-    	       	
-    	
-    	SubMenu mapType = menu.addSubMenu("Map Type").setHeaderIcon(R.drawable.ic_action_map);
-    	mapType.add(MENU_MAP, MAP_TYPE_NORMAL, Menu.NONE, "Map");
-    	mapType.add(MENU_MAP, MAP_TYPE_SATELLITE , Menu.NONE, "Satellite");
-    	mapType.add(MENU_MAP, MAP_TYPE_HYBRID , Menu.NONE, "Hybrid");
-    	mapType.add(MENU_MAP, MAP_TYPE_TERRAIN , Menu.NONE, "Terrain");
-    	    	
-    	SubMenu traffic = menu.addSubMenu("Traffic").setHeaderIcon(R.drawable.ic_action_map);
-    	traffic.add(MENU_TRAFFIC, TRAFFIC_ENABLED , Menu.NONE, "Enabled");
-    	traffic.add(MENU_TRAFFIC, TRAFFIC_DISABLED, Menu.NONE, "Disabled");
-    	
+    		.setIcon(R.drawable.marker).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
     	
     	// Depending on the refresh state,  add refresh or stop-refresh menu option
     	if (!mUpdatesRequested) {
     		menu.add(Menu.NONE, MENU_UPDATES, Menu.NONE, R.string.start_updates)
-    			.setIcon(R.drawable.ic_action_refresh).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    			.setIcon(R.drawable.refresh).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
     	} else {
     		menu.add(Menu.NONE, MENU_UPDATES, Menu.NONE, R.string.stop_updates)
-    			.setIcon(R.drawable.ic_action_location_off).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    			.setIcon(R.drawable.cancel).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
     	}
+    	menu.add(Menu.NONE, MENU_SETTINGS, Menu.NONE, "Settings")
+			.setIcon(R.drawable.setting).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
     	
     	menu.add(Menu.NONE, MENU_EXIT, Menu.NONE, R.string.exit).setIcon(R.drawable.ic_action_map);
 	}
@@ -466,9 +420,9 @@ public class MainActivity extends FragmentActivity implements
         	map.setIndoorEnabled(mySharedPreferences.getBoolean("indoor", false));
         }
 
-        if (mySharedPreferences.contains("maptype_list")) {
-        	//int type = mySharedPreferences.getInt("maptype_list", 1);
-        	// map.setMapType(mySharedPreferences.getInt("maptype_list", 1));
+        if (mySharedPreferences.contains("maptype")) {
+			String sMapType = mySharedPreferences.getString("maptype", "1");
+        	map.setMapType(Integer.parseInt(sMapType));
 
         }
     }
