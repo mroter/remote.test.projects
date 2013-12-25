@@ -749,7 +749,7 @@ public class MainActivity extends FragmentActivity implements
 
                     // Get the first address
                     Address address = addresses.get(0);
-
+                   
                     // Format the first line of address
                     String addressText = getString(R.string.address_output_string,
 
@@ -766,6 +766,7 @@ public class MainActivity extends FragmentActivity implements
 
                     // Return the text
                     return addressText;
+                   
 
                 // If there aren't any addresses, post a message
                 } else {
