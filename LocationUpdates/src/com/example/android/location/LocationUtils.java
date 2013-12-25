@@ -115,7 +115,7 @@ public final class LocationUtils {
    	
     	if (currentLocation != null) {
     		int speed = Math.round(currentLocation.getSpeed()*3.6f);
-        	if (speed < 50) zoom = 19;
+        	if (speed < 50 && speed > 1) zoom = 19;
         	else if (speed < 90) zoom = 18;
     	}
     	

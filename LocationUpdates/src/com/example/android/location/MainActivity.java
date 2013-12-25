@@ -669,7 +669,7 @@ public class MainActivity extends FragmentActivity implements
      * Void     - indicates that progress units are not used by this subclass
      * String   - An address passed to onPostExecute()
      */
-    protected class GetAddressTask extends AsyncTask<Location, Void, String> {
+    protected class GetAddressTask extends AsyncTask<Location, Void, Address> {
 
         // Store the context passed to the AsyncTask when the system instantiates it.
         Context localContext;
@@ -689,7 +689,7 @@ public class MainActivity extends FragmentActivity implements
          * address, and return the address to the UI thread.
          */
         @Override
-        protected String doInBackground(Location... params) {
+        protected Address doInBackground(Location... params) {
             /*
              * Get a new geocoding service instance, set for localized addresses. This example uses
              * android.location.Geocoder, but other geocoders that conform to address standards
@@ -726,7 +726,8 @@ public class MainActivity extends FragmentActivity implements
 
                     // Return an error message
                     //return (getString(R.string.IO_Exception_getFromLocation));
-                    return (getString(R.string.try_again));
+                    //return (getString(R.string.try_again));
+                    return null;
 
                 // Catch incorrect latitude or longitude values
                 } catch (IllegalArgumentException exception2) {
@@ -742,35 +743,21 @@ public class MainActivity extends FragmentActivity implements
                     exception2.printStackTrace();
 
                     //
-                    return errorString;
+                    //return errorString;
+                    return null;
                 }
+            
                 // If the reverse geocode returned an address
                 if (addresses != null && addresses.size() > 0) {
 
-                    // Get the first address
-                    Address address = addresses.get(0);
-                   
-                    // Format the first line of address
-                    String addressText = getString(R.string.address_output_string,
-
-                            // If there's a street address, add it
-                            address.getMaxAddressLineIndex() > 0 ?
-                                    address.getAddressLine(0) : "",
-
-                            // Locality is usually a city
-                            address.getLocality(),
-
-                            // The country of the address
-                            address.getCountryName()
-                    );
-
                     // Return the text
-                    return addressText;
-                   
+                    return addresses.get(0);
 
                 // If there aren't any addresses, post a message
                 } else {
-                  return getString(R.string.no_address_found);
+                  //return getString(R.string.no_address_found);
+                	Log.e(LocationUtils.APPTAG, getString(R.string.no_address_found));
+                	return null;
                 }
         }
 
@@ -779,7 +766,7 @@ public class MainActivity extends FragmentActivity implements
          * UI element that displays the address. This method runs on the UI thread.
          */
         @Override
-        protected void onPostExecute(String address) {
+        protected void onPostExecute(Address address) {
 
 
             // Set the address in the UI

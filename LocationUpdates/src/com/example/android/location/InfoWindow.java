@@ -1,6 +1,7 @@
 package com.example.android.location;
 
 import android.content.Context;
+import android.location.Address;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -13,9 +14,9 @@ public class InfoWindow implements InfoWindowAdapter {
 	
 	LayoutInflater inflater=null;
     Context context;
-    String address;
+    Address address;
 
-	public void setAddress(String address) {
+	public void setAddress(Address address) {
 		this.address = address;
 	}
 
@@ -53,13 +54,26 @@ public class InfoWindow implements InfoWindowAdapter {
         TextView tvAddress = (TextView) v.findViewById(R.id.tv_address);
 
         // Setting the latitude
-        tvLat.setText("Latitude:  " + context.getString(R.string.lat_long, latLng.latitude));
+        tvLat.setText("Latitude: \t\t" + context.getString(R.string.lat_long, latLng.latitude));
 
         // Setting the longitude
-        tvLng.setText("Longitude: "+ context.getString(R.string.lat_long, latLng.longitude));
+        tvLng.setText("Longitude: \t"+ context.getString(R.string.lat_long, latLng.longitude));
         
-     // Setting the address
-        tvAddress.setText("Address: " + address);
+        // Setting the address
+        String sAddress = "";
+        if (address != null) {
+              // If there's a street address, add it
+             if (address.getMaxAddressLineIndex() > 0)  {
+                  sAddress = address.getAddressLine(0) + "\n";
+             }
+             // Locality is usually a city
+             sAddress += address.getLocality() + "\n" ;
+
+             // The country of the address
+             sAddress += address.getCountryName();
+             
+             tvAddress.setText("Address: \n" + sAddress);
+        }
 
         // Returning the view containing InfoWindow contents
         return v;
