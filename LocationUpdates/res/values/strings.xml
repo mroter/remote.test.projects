@@ -29,6 +29,7 @@
 
     <!-- Latitude, longitude format -->
     <string name="latitude_longitude">%1$.8f, %2$.8f</string>
+    <string name="lat_long">%1$.6f</string>
 
     <!-- Speed format -->
     <string name="Speed_Format">%1$.0f</string>

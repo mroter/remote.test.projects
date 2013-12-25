@@ -55,6 +55,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -250,7 +251,7 @@ public class MainActivity extends FragmentActivity implements
    
     private void buildMenu(Menu menu) {         
     	menu.add(Menu.NONE, MENU_GET_LOCATION, Menu.NONE, R.string.get_location)
-    		.setIcon(R.drawable.marker).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    		.setIcon(R.drawable.action_marker).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
     	
     	// Depending on the refresh state,  add refresh or stop-refresh menu option
     	if (!mUpdatesRequested) {
@@ -263,7 +264,7 @@ public class MainActivity extends FragmentActivity implements
     	menu.add(Menu.NONE, MENU_SETTINGS, Menu.NONE, "Settings")
 			.setIcon(R.drawable.setting).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
     	
-    	menu.add(Menu.NONE, MENU_EXIT, Menu.NONE, R.string.exit).setIcon(R.drawable.ic_action_map);
+    	menu.add(Menu.NONE, MENU_EXIT, Menu.NONE, R.string.exit);
 	}
 
 	/*
@@ -375,11 +376,6 @@ public class MainActivity extends FragmentActivity implements
 
             // If any other request code was received
             default:
-               /*
-            	// Report that this Activity received an unknown requestCode
-               Log.d(LocationUtils.APPTAG,
-                       getString(R.string.unknown_activity_request_code, requestCode));
-               */
             	loadPref();
             	break;
         }
@@ -482,7 +478,10 @@ public class MainActivity extends FragmentActivity implements
             // Get address async
             getAddress();
     
-            mMarker = map.addMarker(new MarkerOptions().position(lat_lng).alpha(0.9f));
+            mMarker = map.addMarker(new MarkerOptions()
+            	.position(lat_lng)
+            	.icon(BitmapDescriptorFactory.fromResource(R.drawable.action_marker))
+            	.alpha(0.9f));
             
         }
     }

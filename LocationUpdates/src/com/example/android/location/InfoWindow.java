@@ -53,10 +53,10 @@ public class InfoWindow implements InfoWindowAdapter {
         TextView tvAddress = (TextView) v.findViewById(R.id.tv_address);
 
         // Setting the latitude
-        tvLat.setText("Latitude:  " + latLng.latitude);
+        tvLat.setText("Latitude:  " + context.getString(R.string.lat_long, latLng.latitude));
 
         // Setting the longitude
-        tvLng.setText("Longitude: "+ latLng.longitude);
+        tvLng.setText("Longitude: "+ context.getString(R.string.lat_long, latLng.longitude));
         
      // Setting the address
         tvAddress.setText("Address: " + address);
