@@ -8,18 +8,21 @@
     <TextView
         android:id="@+id/tv_lat"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content" 
+        android:textColor="@color/black"/>
  
     <TextView
         android:id="@+id/tv_lng"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content" 
+        android:textColor="@color/black"/>
     
     
     <TextView
         android:id="@+id/tv_address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
-        android:maxLines="5"/>
+        android:maxLines="5"
+        android:textColor="@color/black"/>
  
 </LinearLayout>
