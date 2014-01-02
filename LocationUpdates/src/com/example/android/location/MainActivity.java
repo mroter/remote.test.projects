@@ -24,8 +24,10 @@ import java.util.Locale;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -39,9 +41,12 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -78,6 +83,8 @@ public class MainActivity extends FragmentActivity implements
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener  {
 
+	private LocationDataSource ds;
+	
 	private static final int MENU_GET_LOCATION = Menu.FIRST;
 	private static final int MENU_UPDATES = Menu.FIRST + 1;
 	private static final int MENU_SETTINGS = Menu.FIRST + 2;
@@ -189,15 +196,50 @@ public class MainActivity extends FragmentActivity implements
         map.setInfoWindowAdapter(infoWindow);
      // Setup a listener for Marker click events
         map.setOnInfoWindowClickListener(this);
+        
+        // Open the local locations DB
+        ds = new LocationDataSource(this);
+        ds.open();
+
 
     }
     
     @Override
     public void onInfoWindowClick(Marker marker) {
-    	
-    	if (marker.equals(mMarker)) {
-    		marker.setVisible(false);
+    	final Marker m = marker;
+    	// hide the marker (remove it?)
+    	if (m.equals(mMarker)) {
+    		m.setVisible(false);
     	}
+    	
+    	// display save dialog
+    	LayoutInflater li = LayoutInflater.from(this);
+		View saveDialog = li.inflate(R.layout.save_dialog, null);
+		
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+		alertDialogBuilder.setView(saveDialog);
+		final EditText userInput = (EditText) saveDialog.findViewById(R.id.location_name);
+		alertDialogBuilder
+			.setTitle("Save Location to Database")
+			.setCancelable(false)
+			.setPositiveButton("OK",
+			  new DialogInterface.OnClickListener() {
+			    public void onClick(DialogInterface dialog,int id) {
+			    	ds.addLocation(new com.example.android.location.Location(userInput.getText().toString(), 
+			    			m.getPosition().latitude, m.getPosition().longitude));
+			    }
+			  })
+			.setNegativeButton("Cancel",
+			  new DialogInterface.OnClickListener() {
+			    public void onClick(DialogInterface dialog,int id) {
+				dialog.cancel();
+			    }
+			  });
+		// create alert dialog
+		AlertDialog alertDialog = alertDialogBuilder.create();
+
+		// show it
+		alertDialog.show();
       }
 
     @Override
@@ -297,7 +339,7 @@ public class MainActivity extends FragmentActivity implements
         mEditor.putBoolean(LocationUtils.KEY_UPDATES_REQUESTED, mUpdatesRequested);
         mEditor.putFloat(LocationUtils.KEY_BEARING, mBearing);
         mEditor.commit();
-
+        ds.close();
         super.onPause();
     }
 
@@ -321,6 +363,7 @@ public class MainActivity extends FragmentActivity implements
      */
     @Override
     public void onResume() {
+    	ds.open();
         super.onResume();       
         loadPref();
         
@@ -479,11 +522,12 @@ public class MainActivity extends FragmentActivity implements
             // Get address async
             getAddress();
     
+            infoWindow.setLocation(currentLocation);
+            
             mMarker = map.addMarker(new MarkerOptions()
             	.position(lat_lng)
             	.icon(BitmapDescriptorFactory.fromResource(R.drawable.action_marker))
             	.alpha(0.9f));
-            
         }
     }
 

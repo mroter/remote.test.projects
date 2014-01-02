@@ -19,19 +19,20 @@
     <!-- Application identifiers -->
     <string name="app_name">Locator</string>
     <string name="app_tag">LocationUpdates</string>
-    <string name="app_description">        Displays current address and current or updated location using Location Services</string>
+    <string name="app_description">Displays current address and current or updated location using Location Services</string>
 
     <!-- User interface labels and strings -->
 
-
+	<string name="edit_message">Type location name</string>
+		
     <!-- Address format -->
     <string name="address_output_string">%1$s, %2$s, %3$s</string>
 
     <!-- Latitude, longitude format -->
     <string name="latitude_longitude">%1$.8f, %2$.8f</string>
     <string name="lat_long">%1$.6f</string>
-
-    <!-- Speed format -->
+    
+    <string name="altitude_format">%1$.0f</string>
     <string name="Speed_Format">%1$.0f</string>
 
     <!-- Menu title -->
