@@ -2,7 +2,6 @@ package com.example.android.location;
 
 import android.content.Context;
 import android.location.Address;
-import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -16,15 +15,10 @@ public class InfoWindow implements InfoWindowAdapter {
 	LayoutInflater inflater=null;
     Context context;
     Address address;
-    android.location.Location location;
+
 
 	public void setAddress(Address address) {
 		this.address = address;
-	}
-	
-
-	public void setLocation(Location currentLocation) {
-		this.location = currentLocation;
 	}
 
 	public InfoWindow (LayoutInflater inflater, Context context){
@@ -45,10 +39,30 @@ public class InfoWindow implements InfoWindowAdapter {
 
         // Getting view from the layout file info_window_layout
         View v = inflater.inflate(R.layout.info_window, null);
+        //LinearLayout linearLayout = (LinearLayout)v.findViewById(R.id.info);        
 
         // Getting the position from the marker
         LatLng latLng = arg0.getPosition();
-
+        
+        // Retrieve the Place using the markerId
+        Place place = MainActivity.getPlace(arg0.getId());
+        
+        
+        TextView tvName = (TextView) v.findViewById(R.id.tv_name);
+        // if place has a name - display it
+        if (place.get_name() != null) {
+        	tvName.setText(place.get_name());
+        	/*
+	        TextView tvName = new TextView(context);
+	        tvName.setText(place.get_name());
+	        tvName.setId(1);
+	        tvName.setTextColor(context.getResources().getColor(R.color.black));
+	        tvName.setTextSize(12);
+	        ((LinearLayout) linearLayout).addView(tvName);
+	        */
+        } else
+        	tvName.setText("");
+        
         // Getting reference to the TextView to set latitude
         TextView tvLat = (TextView) v.findViewById(R.id.tv_lat);
 
@@ -86,7 +100,7 @@ public class InfoWindow implements InfoWindowAdapter {
         }
         
         // Setting the altitude
-        tvAltitude.setText("Altitude: \t" + context.getString(R.string.altitude_format, location.getAltitude()));
+        tvAltitude.setText("Altitude: \t" + context.getString(R.string.altitude_format, place.get_altitude()));
 
 
         // Returning the view containing InfoWindow contents

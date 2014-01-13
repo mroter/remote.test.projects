@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item android:id="@+id/get_location"
+          android:title="@string/get_location"
+          android:icon="@drawable/action_marker"
+          android:showAsAction="ifRoom"
+          android:orderInCategory="1"/>
+    
+    
+    <item android:id="@+id/search"
+          android:title="@string/search_title"
+          android:icon="@drawable/ic_action_search"
+          android:showAsAction="ifRoom"
+          android:orderInCategory="2"/>
+    
+     <item android:id="@+id/settings"
+          android:title="@string/settings_title"
+          android:icon="@drawable/setting"
+          android:showAsAction="ifRoom"
+          android:orderInCategory="4"/>
+      
+        <item android:id="@+id/exit"
+          android:title="@string/exit"
+          android:showAsAction="never"
+          android:orderInCategory="5"/>
+</menu>

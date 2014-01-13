@@ -1,28 +1,32 @@
 package com.example.android.location;
 
-public class Location {
+import android.location.Address;
+
+public class Place {
 	
 	private int _id;
 	private String _name;
 	private double _longtitude;
 	private double _latitude;
+	private double _altitude;
+	private Address _address;
 	
 	// Empty constructor  
-	public Location(){
+	public Place(){
 		
 	}
 	
-	public Location(int id, String name, double longtitude, double latitude) {
-		this._id = id;
+	public Place(String name, double latitude, double longtitude, double altitude) {
 		this._name = name;
 		this._latitude = latitude;
 		this._longtitude = longtitude;
+		this._altitude = altitude;
 	}
 	
-	public Location(String name, double longtitude, double latitude) {
-		this._name = name;
+	public Place(double latitude, double longtitude, double altitude) {
 		this._latitude = latitude;
 		this._longtitude = longtitude;
+		this._altitude = altitude;
 	}
 	
 	public int get_id() {
@@ -55,6 +59,22 @@ public class Location {
 
 	public void set_latitude(double _latitude) {
 		this._latitude = _latitude;
+	}
+
+	public double get_altitude() {
+		return _altitude;
+	}
+
+	public void set_altitude(double _altitude) {
+		this._altitude = _altitude;
+	}
+
+	public Address get_address() {
+		return _address;
+	}
+
+	public void set_address(Address _address) {
+		this._address = _address;
 	}
 
 }

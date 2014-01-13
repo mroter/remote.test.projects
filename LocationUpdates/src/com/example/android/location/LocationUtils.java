@@ -27,7 +27,7 @@ import com.example.android.location.R;
 public final class LocationUtils {
 
     // Debugging tag for the application
-    public static final String APPTAG = "LocationSample";
+    public static final String APPTAG = "Locator";
 
     // Name of shared preferences repository that stores persistent state
     public static final String SHARED_PREFERENCES =
@@ -46,6 +46,9 @@ public final class LocationUtils {
      * This code is returned in Activity.onActivityResult
      */
     public final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    
+    public final static int SETTINGS_REQUEST = 0;
+    public final static int SEARCH_REQUEST = 1;
 
     /*
      * Constants for location update parameters

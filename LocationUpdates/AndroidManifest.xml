@@ -14,7 +14,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ */
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.android.location"
@@ -49,19 +49,36 @@
 
         <activity
             android:name="com.example.android.location.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:launchMode="singleTop" >
+            
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+     
         </activity>
         
         <activity
             android:name="com.example.android.location.SetPreferenceActivity"
-            android:label="@string/title_activity_set_preference"
             android:icon="@drawable/setting"
+            android:label="@string/title_activity_set_preference"
             android:parentActivityName="com.example.android.location.MainActivity" >
+        </activity>
+        
+        <activity
+            android:name="com.example.android.location.SearchActivity"
+            android:label="@string/title_activity_search" 
+            android:parentActivityName="com.example.android.location.MainActivity" > 
+                <intent-filter>
+          			<action android:name="android.intent.action.SEARCH" />
+        		</intent-filter>
+        		
+		        <meta-data android:name="android.app.searchable"
+		                   android:resource="@xml/searchable"/> 
+		                   
+		        <meta-data android:name="android.app.default_searchable"
+                   			android:value=".SearchActivity" />
         </activity>
 
         <service
@@ -74,8 +91,7 @@
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyDMFvmgy13hudpf4BRd1iuodfvYe2bl2dM" />
-
-
+        
     </application>
 
 </manifest>

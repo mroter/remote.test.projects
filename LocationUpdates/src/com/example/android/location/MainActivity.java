@@ -18,6 +18,7 @@ package com.example.android.location;
 
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -43,6 +44,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -84,14 +86,9 @@ public class MainActivity extends FragmentActivity implements
         GooglePlayServicesClient.OnConnectionFailedListener  {
 
 	private LocationDataSource ds;
-	
-	private static final int MENU_GET_LOCATION = Menu.FIRST;
-	private static final int MENU_UPDATES = Menu.FIRST + 1;
-	private static final int MENU_SETTINGS = Menu.FIRST + 2;
-	private static final int MENU_EXIT = Menu.FIRST + 3;
-	
-	
-	
+		
+	private static final int MENU_UPDATES = Menu.FIRST + 2;
+		
 	// A request to connect to Location Services
     private LocationRequest mLocationRequest;
 
@@ -106,7 +103,9 @@ public class MainActivity extends FragmentActivity implements
     
     // Google Map
     private GoogleMap map;
+    //TODO remove it
     private Marker mMarker;
+    private static HashMap<String, Place> markers;
 
 
     // Handle to SharedPreferences for this app
@@ -135,9 +134,11 @@ public class MainActivity extends FragmentActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frame_layout);
-        
+                
         // keeping the screen on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        
+        markers = new HashMap<String, Place>();
 
         // Get handles to the UI view objects
         mSpeed = (TextView) findViewById(R.id.Speed);
@@ -203,14 +204,14 @@ public class MainActivity extends FragmentActivity implements
 
 
     }
-    
-    @Override
+        
+	@Override
     public void onInfoWindowClick(Marker marker) {
-    	final Marker m = marker;
+    	//Retrieve the Place object from Markers HashMap using the marker id
+    	final Place place = markers.get(marker.getId());
+    	
     	// hide the marker (remove it?)
-    	if (m.equals(mMarker)) {
-    		m.setVisible(false);
-    	}
+    	marker.setVisible(false);
     	
     	// display save dialog
     	LayoutInflater li = LayoutInflater.from(this);
@@ -225,8 +226,8 @@ public class MainActivity extends FragmentActivity implements
 			.setPositiveButton("OK",
 			  new DialogInterface.OnClickListener() {
 			    public void onClick(DialogInterface dialog,int id) {
-			    	ds.addLocation(new com.example.android.location.Location(userInput.getText().toString(), 
-			    			m.getPosition().latitude, m.getPosition().longitude));
+			    	place.set_name(userInput.getText().toString());
+			    	ds.addLocation(place);
 			    }
 			  })
 			.setNegativeButton("Cancel",
@@ -244,17 +245,18 @@ public class MainActivity extends FragmentActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-    	super.onCreateOptionsMenu(menu);
+    	//super.onCreateOptionsMenu(menu);
     	buildMenu(menu);
         return true;
     }
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
+        Intent intent;
+    	// Handle item selection
         switch (item.getItemId()) {
         
-            case MENU_GET_LOCATION:
+            case R.id.get_location:
                 getLocation();
                 return true;
                  
@@ -267,17 +269,24 @@ public class MainActivity extends FragmentActivity implements
             	invalidateOptionsMenu ();
                 return true;
                  
-            case MENU_EXIT:
+            case R.id.exit:
             	if (mUpdatesRequested) {
             		stopUpdates();
                 }
                 this.finish();
                 return true; 
                 
-            case MENU_SETTINGS:
-            	 Intent intent = new Intent();
-                 intent.setClass(MainActivity.this, SetPreferenceActivity.class);
-                 startActivityForResult(intent, 0); 
+            case R.id.search:
+            	// onSearchRequested(); 
+            	intent = new Intent(MainActivity.this, SearchActivity.class);
+            	intent.putExtra("QUERY", "matty");
+            	startActivityForResult(intent, 1); 
+                return true;
+                
+            case R.id.settings:
+            	intent = new Intent();
+                intent.setClass(MainActivity.this, SetPreferenceActivity.class);
+                startActivityForResult(intent, 0); 
                 return true;
                 
             default:
@@ -287,27 +296,39 @@ public class MainActivity extends FragmentActivity implements
     
     @Override
     public boolean onPrepareOptionsMenu (Menu menu){
+    	/*
     	menu.clear();
     	buildMenu(menu);
+    	*/
     	return super.onPrepareOptionsMenu(menu);
     }
    
-    private void buildMenu(Menu menu) {         
-    	menu.add(Menu.NONE, MENU_GET_LOCATION, Menu.NONE, R.string.get_location)
-    		.setIcon(R.drawable.action_marker).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-    	
+    private void buildMenu(Menu menu) { 
+    	MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
+      	
     	// Depending on the refresh state,  add refresh or stop-refresh menu option
     	if (!mUpdatesRequested) {
     		menu.add(Menu.NONE, MENU_UPDATES, Menu.NONE, R.string.start_updates)
-    			.setIcon(R.drawable.refresh).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    			.setIcon(R.drawable.refresh).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
     	} else {
     		menu.add(Menu.NONE, MENU_UPDATES, Menu.NONE, R.string.stop_updates)
-    			.setIcon(R.drawable.cancel).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    			.setIcon(R.drawable.cancel).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
     	}
-    	menu.add(Menu.NONE, MENU_SETTINGS, Menu.NONE, "Settings")
-			.setIcon(R.drawable.setting).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    	/*
+    	String pkg = "com.example.android.location";
+    	String cls = "com.example.android.location.SearchActivity";
+		ComponentName mycomponent = new ComponentName(pkg,cls);   
     	
-    	menu.add(Menu.NONE, MENU_EXIT, Menu.NONE, R.string.exit);
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+               (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(mycomponent));
+        searchView.setIconifiedByDefault(false); 
+    	*/
 	}
 
 	/*
@@ -417,10 +438,40 @@ public class MainActivity extends FragmentActivity implements
 
                     break;
                 }
+            
+            case LocationUtils.SETTINGS_REQUEST:
+            		loadPref();
+            	break;
+            case LocationUtils.SEARCH_REQUEST:
+            	  if (resultCode == RESULT_OK) {
+            		    if (intent.hasExtra("latitude") && 
+            		    		intent.hasExtra("longtitude") &&
+            		    		intent.hasExtra("location_name")) {
+            		      //Toast.makeText(this, intent.getExtras().getString("latitude") + "," + intent.getExtras().getString("longtitude"), Toast.LENGTH_LONG).show();
+            		    	double lat = Double.valueOf(intent.getExtras().getString("latitude"));
+            		    	double lng = Double.valueOf(intent.getExtras().getString("longtitude"));
+            		    	LatLng lat_lng = new LatLng(lat, lng);
+		        		    Location location = new Location(intent.getExtras().getString("location_name"));
+		        		    location.setLatitude(lat);
+		        		    location.setLongitude(lng);
+		        		    location.setBearing(0);
+		        		    location.setAltitude(0);
+		        		    updateCamera(location);
+		        		    
+		        		    mMarker = map.addMarker(new MarkerOptions()
+		        		    	.position(lat_lng)
+		        		    	.icon(BitmapDescriptorFactory.fromResource(R.drawable.search)));
+		        		    
+		        		    Place place = new Place(intent.getExtras().getString("location_name"), lat, lng, 0);
+		        		    markers.put(mMarker.getId(), place);
 
+            		    }
+        		  }
+            	break;
             // If any other request code was received
             default:
-            	loadPref();
+            	// through unsupported requestCode
+            	Log.e(LocationUtils.APPTAG, "Unsupported requestCode " + requestCode);
             	break;
         }
     }
@@ -513,31 +564,27 @@ public class MainActivity extends FragmentActivity implements
         if (servicesConnected()) {
 
             // Get the current location
-            Location currentLocation = mLocationClient.getLastLocation();
-            LatLng lat_lng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+            Location cr = mLocationClient.getLastLocation();
+            LatLng lat_lng = new LatLng(cr.getLatitude(), cr.getLongitude());
+            Place place = new Place(cr.getLatitude(), cr.getLongitude(), cr.getAltitude());
 
             // Position the map to my current location and zoom in
-            updateCamera(currentLocation);
+            updateCamera(cr);
             
             // Get address async
+            //TODO move to Place or pass place
             getAddress();
-    
-            infoWindow.setLocation(currentLocation);
-            
+                
             mMarker = map.addMarker(new MarkerOptions()
             	.position(lat_lng)
             	.icon(BitmapDescriptorFactory.fromResource(R.drawable.action_marker))
             	.alpha(0.9f));
+            
+            markers.put(mMarker.getId(), place);
         }
     }
 
-    /**
-     * Invoked by the "Get Address" button.
-     * Get the address of the current location, using reverse geocoding. This only works if
-     * a geocoding service is available.
-     *
-     * @param v The view object associated with this method, in this case a Button.
-     */
+
     // For Eclipse with ADT, suppress warnings about Geocoder.isPresent()
     @SuppressLint("NewApi")
     private void getAddress() {
@@ -880,5 +927,12 @@ public class MainActivity extends FragmentActivity implements
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             return mDialog;
         }
+    }
+    public static Place getPlace(String markerId) {
+    	if (markers.containsKey(markerId)) {
+    		return markers.get(markerId);
+    	} else {
+    		return null;
+    	}
     }
 }
