@@ -33,12 +33,13 @@ public class SearchActivity extends Activity {
 	        	String location_name = ((TextView) view.findViewById(R.id.result_name)).getText().toString();
 	        	String latitude = ((TextView) view.findViewById(R.id.result_latitude)).getText().toString();
 	        	String longtitude = ((TextView) view.findViewById(R.id.result_longtitude)).getText().toString();
-	        	//Toast.makeText(getApplicationContext(), "Location "+ latitude + "," + longtitude +" selected", Toast.LENGTH_LONG).show();
+	        	String altitude = ((TextView) view.findViewById(R.id.result_altitude)).getText().toString();
 	        	       	
 	        	 Intent intent = new Intent(view.getContext(), MainActivity.class);
 	        	 intent.putExtra("location_name", location_name);
 	        	 intent.putExtra("latitude", latitude);
 	        	 intent.putExtra("longtitude", longtitude);
+	        	 intent.putExtra("altitude", altitude);
 	        	 setResult(RESULT_OK, intent);
 	        	 finish();
 	        	 
@@ -57,12 +58,14 @@ public class SearchActivity extends Activity {
         // Specify the columns we want to display in the result
         String[] from = new String[] { DBHelper.COLUMN_NAME,
                                        DBHelper.COLUMN_LATITUDE,
-                                       DBHelper.COLUMN_LONGTITUDE };
+                                       DBHelper.COLUMN_LONGTITUDE,
+                                       DBHelper.COLUMN_ALTITUDE};
 
         // Specify the corresponding layout elements where we want the columns to go
         int[] to = new int[] { R.id.result_name,
                                R.id.result_latitude,
-                               R.id.result_longtitude};
+                               R.id.result_longtitude,
+                               R.id.result_altitude};
         
         
         // Create a simple cursor adapter for the definitions and apply them to the ListView

@@ -7,7 +7,7 @@ import android.util.Log;
 
 public class DBHelper extends SQLiteOpenHelper {
 	
-	private static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 4;
 	private static final String DATABASE_NAME = "locationDB.db";
 	
 	public static final String TABLE_LOCATIONS = "locations";
@@ -15,11 +15,12 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_NAME = "name";
 	public static final String COLUMN_LATITUDE = "latitude";
 	public static final String COLUMN_LONGTITUDE = "longtitude";
+	public static final String COLUMN_ALTITUDE = "altitude";
 	
 	public static final String CREATE_LOCATIONS_TABLE = "create table " +
 			TABLE_LOCATIONS + "("
             + COLUMN_ID + " integer primary key autoincrement," + COLUMN_NAME 
-            + " TEXT," + COLUMN_LATITUDE + " REAL," + COLUMN_LONGTITUDE + " REAL" + ")";
+            + " TEXT," + COLUMN_LATITUDE + " REAL," + COLUMN_LONGTITUDE + " REAL," + COLUMN_ALTITUDE + " REAL"  + ")";
 	
 	/**
 	 * This class is responsible for creating the database and upgrading it. 

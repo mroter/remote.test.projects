@@ -14,12 +14,6 @@ public class InfoWindow implements InfoWindowAdapter {
 	
 	LayoutInflater inflater=null;
     Context context;
-    Address address;
-
-
-	public void setAddress(Address address) {
-		this.address = address;
-	}
 
 	public InfoWindow (LayoutInflater inflater, Context context){
     	 this.inflater=inflater;
@@ -52,14 +46,6 @@ public class InfoWindow implements InfoWindowAdapter {
         // if place has a name - display it
         if (place.get_name() != null) {
         	tvName.setText(place.get_name());
-        	/*
-	        TextView tvName = new TextView(context);
-	        tvName.setText(place.get_name());
-	        tvName.setId(1);
-	        tvName.setTextColor(context.getResources().getColor(R.color.black));
-	        tvName.setTextSize(12);
-	        ((LinearLayout) linearLayout).addView(tvName);
-	        */
         } else
         	tvName.setText("");
         
@@ -83,6 +69,7 @@ public class InfoWindow implements InfoWindowAdapter {
         
         // Setting the address
         String sAddress = "";
+        Address address = place.get_address();
         if (address != null) {
               // If there's a street address, add it
              if (address.getMaxAddressLineIndex() > 0)  {

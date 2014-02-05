@@ -25,12 +25,13 @@ public class LocationDataSource {
 		dbHelper.close();
 	}
 
-	public void addLocation(Place location) {
+	public void addLocation(Place place) {
 
         ContentValues values = new ContentValues();
-        values.put(DBHelper.COLUMN_NAME, location.get_name());
-        values.put(DBHelper.COLUMN_LATITUDE, location.get_latitude());
-        values.put(DBHelper.COLUMN_LONGTITUDE, location.get_longtitude());
+        values.put(DBHelper.COLUMN_NAME, place.get_name());
+        values.put(DBHelper.COLUMN_LATITUDE, place.get_latitude());
+        values.put(DBHelper.COLUMN_LONGTITUDE, place.get_longtitude());
+        values.put(DBHelper.COLUMN_ALTITUDE, place.get_altitude());
  
       
         db.insert(DBHelper.TABLE_LOCATIONS, null, values);

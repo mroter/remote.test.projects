@@ -446,25 +446,33 @@ public class MainActivity extends FragmentActivity implements
             	  if (resultCode == RESULT_OK) {
             		    if (intent.hasExtra("latitude") && 
             		    		intent.hasExtra("longtitude") &&
+            		    		intent.hasExtra("altitude") &&
             		    		intent.hasExtra("location_name")) {
-            		      //Toast.makeText(this, intent.getExtras().getString("latitude") + "," + intent.getExtras().getString("longtitude"), Toast.LENGTH_LONG).show();
+            		    	
             		    	double lat = Double.valueOf(intent.getExtras().getString("latitude"));
             		    	double lng = Double.valueOf(intent.getExtras().getString("longtitude"));
+            		    	double alt = Double.valueOf(intent.getExtras().getString("altitude"));
+            		    	
+            		    	// Create a Place object
+            		    	Place place = new Place(intent.getExtras().getString("location_name"), lat, lng, alt);
+            		    	getAddress(place);
+            		    	
+            		    	// Create a Location object to position the camera
             		    	LatLng lat_lng = new LatLng(lat, lng);
 		        		    Location location = new Location(intent.getExtras().getString("location_name"));
 		        		    location.setLatitude(lat);
 		        		    location.setLongitude(lng);
 		        		    location.setBearing(0);
-		        		    location.setAltitude(0);
+		        		    location.setAltitude(alt);
 		        		    updateCamera(location);
 		        		    
+		        		    // Add a marker on the Map
 		        		    mMarker = map.addMarker(new MarkerOptions()
 		        		    	.position(lat_lng)
 		        		    	.icon(BitmapDescriptorFactory.fromResource(R.drawable.search)));
 		        		    
-		        		    Place place = new Place(intent.getExtras().getString("location_name"), lat, lng, 0);
+		        		    // Add the marker and its place to the map
 		        		    markers.put(mMarker.getId(), place);
-
             		    }
         		  }
             	break;
@@ -572,8 +580,7 @@ public class MainActivity extends FragmentActivity implements
             updateCamera(cr);
             
             // Get address async
-            //TODO move to Place or pass place
-            getAddress();
+            getAddress(place);
                 
             mMarker = map.addMarker(new MarkerOptions()
             	.position(lat_lng)
@@ -587,7 +594,7 @@ public class MainActivity extends FragmentActivity implements
 
     // For Eclipse with ADT, suppress warnings about Geocoder.isPresent()
     @SuppressLint("NewApi")
-    private void getAddress() {
+    private void getAddress(Place place) {
 
         // In Gingerbread and later, use Geocoder.isPresent() to see if a geocoder is available.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && !Geocoder.isPresent()) {
@@ -598,11 +605,8 @@ public class MainActivity extends FragmentActivity implements
 
         if (servicesConnected()) {
 
-            // Get the current location
-            Location currentLocation = mLocationClient.getLastLocation();
-
             // Start the background task
-            (new MainActivity.GetAddressTask(this)).execute(currentLocation);
+            (new MainActivity.GetAddressTask(this)).execute(place);
         }
     }
 
@@ -756,12 +760,12 @@ public class MainActivity extends FragmentActivity implements
     /**
      * An AsyncTask that calls getFromLocation() in the background.
      * The class uses the following generic types:
-     * Location - A {@link android.location.Location} object containing the current location,
+     * Place - A Place object containing the current location,
      *            passed as the input parameter to doInBackground()
      * Void     - indicates that progress units are not used by this subclass
-     * String   - An address passed to onPostExecute()
+     * Address  - An Address Object passed to onPostExecute()
      */
-    protected class GetAddressTask extends AsyncTask<Location, Void, Address> {
+    protected class GetAddressTask extends AsyncTask<Place, Void, Address> {
 
         // Store the context passed to the AsyncTask when the system instantiates it.
         Context localContext;
@@ -781,7 +785,7 @@ public class MainActivity extends FragmentActivity implements
          * address, and return the address to the UI thread.
          */
         @Override
-        protected Address doInBackground(Location... params) {
+        protected Address doInBackground(Place... params) {
             /*
              * Get a new geocoding service instance, set for localized addresses. This example uses
              * android.location.Geocoder, but other geocoders that conform to address standards
@@ -793,7 +797,7 @@ public class MainActivity extends FragmentActivity implements
             Geocoder geocoder = new Geocoder(localContext, mLocale);
 
             // Get the current location from the input parameter list
-            Location location = params[0];
+            Place place = params[0];
 
             // Create a list to contain the result address
             List <Address> addresses = null;
@@ -805,7 +809,7 @@ public class MainActivity extends FragmentActivity implements
                  * Call the synchronous getFromLocation() method with the latitude and
                  * longitude of the current location. Return at most 1 address.
                  */
-                addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                addresses = geocoder.getFromLocation(place.get_latitude(), place.get_longtitude(), 1);
 
                 // Catch network or other I/O problems.
                 } catch (IOException exception1) {
@@ -827,8 +831,8 @@ public class MainActivity extends FragmentActivity implements
                     // Construct a message containing the invalid arguments
                     String errorString = getString(
                             R.string.illegal_argument_exception,
-                            location.getLatitude(),
-                            location.getLongitude()
+                            place.get_latitude(),
+                            place.get_longtitude()
                     );
                     // Log the error and print the stack trace
                     Log.e(LocationUtils.APPTAG, errorString);
@@ -842,7 +846,9 @@ public class MainActivity extends FragmentActivity implements
                 // If the reverse geocode returned an address
                 if (addresses != null && addresses.size() > 0) {
 
-                    // Return the text
+                    // Set the Address in the Place
+                	place.set_address(addresses.get(0));
+                	// Return an Address Object
                     return addresses.get(0);
 
                 // If there aren't any addresses, post a message
@@ -860,9 +866,10 @@ public class MainActivity extends FragmentActivity implements
         @Override
         protected void onPostExecute(Address address) {
 
-
             // Set the address in the UI
-            infoWindow.setAddress(address);
+            //infoWindow.setAddress(address);
+            
+            
         }
     }
 
