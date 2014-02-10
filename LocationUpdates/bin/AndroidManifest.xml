@@ -43,6 +43,7 @@
         android:icon="@drawable/locator"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -69,16 +70,16 @@
         <activity
             android:name="com.example.android.location.SearchActivity"
             android:label="@string/title_activity_search" 
-            android:parentActivityName="com.example.android.location.MainActivity" > 
+            android:parentActivityName="com.example.android.location.MainActivity"
+            android:launchMode="singleTop" > 
+                
                 <intent-filter>
           			<action android:name="android.intent.action.SEARCH" />
         		</intent-filter>
         		
-		        <meta-data android:name="android.app.searchable"
-		                   android:resource="@xml/searchable"/> 
-		                   
-		        <meta-data android:name="android.app.default_searchable"
-                   			android:value=".SearchActivity" />
+		        <meta-data android:name="android.app.default_searchable" android:value=".SearchActivity" />
+		        <meta-data android:name="android.app.searchable" android:resource="@xml/searchable"/> 
+		                  
         </activity>
 
         <service
@@ -86,6 +87,9 @@
             android:exported="false"
             android:label="@string/app_name" >
         </service>
+        
+        <!-- Points to searchable activity so the whole app can invoke search. -->
+     	
 
         <!-- Specify the API key -->
         <meta-data

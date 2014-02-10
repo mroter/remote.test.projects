@@ -276,11 +276,12 @@ public class MainActivity extends FragmentActivity implements
                 this.finish();
                 return true; 
                 
-            case R.id.search:
-            	// onSearchRequested(); 
+            case R.id.action_search:
+            	//onSearchRequested(); 
+            	
             	intent = new Intent(MainActivity.this, SearchActivity.class);
-            	intent.putExtra("QUERY", "matty");
-            	startActivityForResult(intent, 1); 
+            	startActivityForResult(intent, 1);
+            	
                 return true;
                 
             case R.id.settings:
@@ -315,20 +316,7 @@ public class MainActivity extends FragmentActivity implements
     		menu.add(Menu.NONE, MENU_UPDATES, Menu.NONE, R.string.stop_updates)
     			.setIcon(R.drawable.cancel).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
     	}
-    	/*
-    	String pkg = "com.example.android.location";
-    	String cls = "com.example.android.location.SearchActivity";
-		ComponentName mycomponent = new ComponentName(pkg,cls);   
-    	
-        // Associate searchable configuration with the SearchView
-        SearchManager searchManager =
-               (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView =
-                (SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setSearchableInfo(
-                searchManager.getSearchableInfo(mycomponent));
-        searchView.setIconifiedByDefault(false); 
-    	*/
+
 	}
 
 	/*
@@ -395,6 +383,12 @@ public class MainActivity extends FragmentActivity implements
     	// This caused the application to die when orientation changed 
     	//android.os.Process.killProcess(android.os.Process.myPid());
         super.onDestroy();
+    }
+    
+    @Override
+    protected void onNewIntent(Intent intent) {
+
+        
     }
 
     /*

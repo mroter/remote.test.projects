@@ -7,12 +7,12 @@
           android:showAsAction="ifRoom"
           android:orderInCategory="1"/>
     
-    
-    <item android:id="@+id/search"
-          android:title="@string/search_title"
-          android:icon="@drawable/ic_action_search"
-          android:showAsAction="ifRoom"
+    <item android:id="@+id/action_search"
+          android:title="@string/menu_search"
+          android:icon="@android:drawable/ic_menu_search"
+          android:showAsAction="always"
           android:orderInCategory="2"/>
+    
     
      <item android:id="@+id/settings"
           android:title="@string/settings_title"
