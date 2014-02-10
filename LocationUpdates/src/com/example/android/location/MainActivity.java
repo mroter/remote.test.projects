@@ -306,7 +306,7 @@ public class MainActivity extends FragmentActivity implements
    
     private void buildMenu(Menu menu) { 
     	MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.options_menu, menu);
+        inflater.inflate(R.menu.main_menu, menu);
       	
     	// Depending on the refresh state,  add refresh or stop-refresh menu option
     	if (!mUpdatesRequested) {

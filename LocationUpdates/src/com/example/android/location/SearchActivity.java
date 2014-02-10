@@ -40,7 +40,7 @@ public class SearchActivity extends Activity  {
 	
     @Override
     protected void onNewIntent(Intent intent) {
-
+    	setIntent(intent);
         handleIntent(intent);
     }
     
@@ -49,11 +49,7 @@ public class SearchActivity extends Activity  {
      * @param intent
      */
 	private void handleIntent(Intent intent) {
-		if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            // handles a click on a search suggestion; 
-			//doMySearch("");
-     
-		} else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			// handles a search query
 		    String query = intent.getStringExtra(SearchManager.QUERY);
 		    doMySearch(query);
