@@ -27,6 +27,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -49,6 +50,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -247,7 +249,8 @@ public class MainActivity extends FragmentActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
     	//super.onCreateOptionsMenu(menu);
     	buildMenu(menu);
-        return true;
+        //return true;
+        return super.onCreateOptionsMenu(menu);
     }
     
     @Override
@@ -277,11 +280,7 @@ public class MainActivity extends FragmentActivity implements
                 return true; 
                 
             case R.id.action_search:
-            	//onSearchRequested(); 
-            	
-            	intent = new Intent(MainActivity.this, SearchActivity.class);
-            	startActivityForResult(intent, 1);
-            	
+            	onSearchRequested(); 
                 return true;
                 
             case R.id.settings:
@@ -301,12 +300,19 @@ public class MainActivity extends FragmentActivity implements
     	menu.clear();
     	buildMenu(menu);
     	*/
+    	menu.findItem(R.id.action_search).collapseActionView();
     	return super.onPrepareOptionsMenu(menu);
     }
    
     private void buildMenu(Menu menu) { 
     	MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
+        
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+ 
       	
     	// Depending on the refresh state,  add refresh or stop-refresh menu option
     	if (!mUpdatesRequested) {
@@ -335,7 +341,6 @@ public class MainActivity extends FragmentActivity implements
         mLocationClient.disconnect();
         
         super.onStop();
-
     }
     /*
      * Called when the Activity is going into the background.
@@ -376,6 +381,8 @@ public class MainActivity extends FragmentActivity implements
         super.onResume();       
         loadPref();
         
+        // To force rebuild of the menu - close the search
+        invalidateOptionsMenu();
     }
     
     @Override
@@ -387,9 +394,38 @@ public class MainActivity extends FragmentActivity implements
     
     @Override
     protected void onNewIntent(Intent intent) {
-
-        
-    }
+	    if (intent.hasExtra("latitude") && 
+	    		intent.hasExtra("longtitude") &&
+	    		intent.hasExtra("altitude") &&
+	    		intent.hasExtra("location_name")) {
+	    	
+	    	double lat = Double.valueOf(intent.getExtras().getString("latitude"));
+	    	double lng = Double.valueOf(intent.getExtras().getString("longtitude"));
+	    	double alt = Double.valueOf(intent.getExtras().getString("altitude"));
+	    	
+	    	// Create a Place object
+	    	Place place = new Place(intent.getExtras().getString("location_name"), lat, lng, alt);
+	    	getAddress(place);
+	    	
+	    	// Create a Location object to position the camera
+	    	LatLng lat_lng = new LatLng(lat, lng);
+		    Location location = new Location(intent.getExtras().getString("location_name"));
+		    location.setLatitude(lat);
+		    location.setLongitude(lng);
+		    location.setBearing(0);
+		    location.setAltitude(alt);
+		    updateCamera(location);
+		    
+		    // Add a marker on the Map
+		    mMarker = map.addMarker(new MarkerOptions()
+		    	.position(lat_lng)
+		    	.icon(BitmapDescriptorFactory.fromResource(R.drawable.search)));
+		    
+		    // Add the marker and its place to the map
+		    markers.put(mMarker.getId(), place);
+	    }
+  }
+      
 
     /*
      * Handle results returned to this Activity by other Activities started with
@@ -436,40 +472,7 @@ public class MainActivity extends FragmentActivity implements
             case LocationUtils.SETTINGS_REQUEST:
             		loadPref();
             	break;
-            case LocationUtils.SEARCH_REQUEST:
-            	  if (resultCode == RESULT_OK) {
-            		    if (intent.hasExtra("latitude") && 
-            		    		intent.hasExtra("longtitude") &&
-            		    		intent.hasExtra("altitude") &&
-            		    		intent.hasExtra("location_name")) {
-            		    	
-            		    	double lat = Double.valueOf(intent.getExtras().getString("latitude"));
-            		    	double lng = Double.valueOf(intent.getExtras().getString("longtitude"));
-            		    	double alt = Double.valueOf(intent.getExtras().getString("altitude"));
-            		    	
-            		    	// Create a Place object
-            		    	Place place = new Place(intent.getExtras().getString("location_name"), lat, lng, alt);
-            		    	getAddress(place);
-            		    	
-            		    	// Create a Location object to position the camera
-            		    	LatLng lat_lng = new LatLng(lat, lng);
-		        		    Location location = new Location(intent.getExtras().getString("location_name"));
-		        		    location.setLatitude(lat);
-		        		    location.setLongitude(lng);
-		        		    location.setBearing(0);
-		        		    location.setAltitude(alt);
-		        		    updateCamera(location);
-		        		    
-		        		    // Add a marker on the Map
-		        		    mMarker = map.addMarker(new MarkerOptions()
-		        		    	.position(lat_lng)
-		        		    	.icon(BitmapDescriptorFactory.fromResource(R.drawable.search)));
-		        		    
-		        		    // Add the marker and its place to the map
-		        		    markers.put(mMarker.getId(), place);
-            		    }
-        		  }
-            	break;
+            	
             // If any other request code was received
             default:
             	// through unsupported requestCode
