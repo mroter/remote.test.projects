@@ -109,7 +109,6 @@ int layout info_window 0x7f030002
 int layout result 0x7f030003
 int layout save_dialog 0x7f030004
 int menu main_menu 0x7f0c0000
-int menu search 0x7f0c0001
 int string IO_Exception_getFromLocation 0x7f07003f
 int string Speed_Format 0x7f070030
 int string action_settings 0x7f070031
