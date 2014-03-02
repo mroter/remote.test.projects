@@ -1,15 +1,19 @@
 package com.example.android.location;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.SearchManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class SearchActivity extends Activity  {
 
@@ -67,7 +71,7 @@ public class SearchActivity extends Activity  {
         
         // Create a simple cursor adapter for the definitions and apply them to the ListView
         @SuppressWarnings("deprecation")
-		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
+		final SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
                 R.layout.result, ds.findLocation(query), from, to);
               
         mListView.setAdapter(adapter);
@@ -94,8 +98,46 @@ public class SearchActivity extends Activity  {
 	        }
 	    });
         
+
+        mListView.setOnItemLongClickListener(new OnItemLongClickListener() {
+    		@Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int pos, long id) {
+    			 final int _id = (int) id;
+    			 final View _arg1 = arg1;
+    	    	// display delete confirmation dialog
+    			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(arg1.getContext());
+    			alertDialogBuilder
+    				.setTitle("Delete Location")
+    				.setMessage("Are you sure you want to delete this location?")
+    				.setCancelable(false)
+    				.setPositiveButton("OK",
+    				  new DialogInterface.OnClickListener() {
+    				    public void onClick(DialogInterface dialog, int id) {
+
+    		    			ds.deleteLocation(_id);
+    		    			Toast.makeText(_arg1.getContext(), "Location deleted", Toast.LENGTH_SHORT).show();
+    		    			adapter.notifyDataSetChanged();
+    		    			// TODO remove the item and return to the list
+    		    			finish();  
+    				    }
+    				  })
+    				.setNegativeButton("Cancel",
+    				  new DialogInterface.OnClickListener() {
+    				    public void onClick(DialogInterface dialog,int id) {
+    					dialog.cancel();
+    				    }
+    				  });
+    			// create alert dialog
+    			AlertDialog alertDialog = alertDialogBuilder.create();
+
+    			// show it
+    			alertDialog.show();
+
+                return true;
+            }
+        }); 
         
-        adapter.notifyDataSetChanged();
+
 	}
 
 
